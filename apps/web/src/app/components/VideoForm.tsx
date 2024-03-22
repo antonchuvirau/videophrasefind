@@ -3,7 +3,7 @@
 import { useDropzone, FileWithPath } from "react-dropzone";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
@@ -12,13 +12,9 @@ import useZodForm from "@/app/hooks/useZodForm";
 import Button from "@/app/components/Button";
 import Input from "@/app/components/Input";
 
-import {
-  fetchTranscriptionResult,
-  getUploadUrl,
-  triggerVideoTranscription,
-} from "@/app/actions";
+import { fetchAndTrigger, getUploadUrl, trigger } from "@/app/actions";
 
-import Loader from "@/app/video/[...s3DirectoryPath]/loader";
+import Loader from "@/app/video/[s3DirectoryPath]/loader";
 
 export const schema = z.object({
   videoUrl: z
@@ -31,12 +27,14 @@ export const schema = z.object({
 export default function VideoForm() {
   const router = useRouter();
 
+  const [status, setStatus] = useState("no status");
+
   const [isPending, startTransition] = useTransition();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, isSubmitting, isSubmitted, isDirty },
+    formState: { errors, isValid, isSubmitting, isDirty },
   } = useZodForm({
     schema,
     defaultValues: {
@@ -53,37 +51,46 @@ export default function VideoForm() {
     </li>
   ));
 
-  const uploadMutation = useMutation({
-    mutationFn: async () => {
+  const localUploadMutation = useMutation({
+    onMutate: () => {
+      setStatus("uploading your video to our storage");
+    },
+    mutationFn: async ({ file }: { file: File }) => {
       const { uploadUrl, s3Directory, downloadUrl } = await getUploadUrl();
 
       await fetch(uploadUrl, {
         method: "PUT",
-        body: acceptedFiles[0],
+        body: file,
       });
 
-      return { s3Directory, videoUrl: downloadUrl };
+      // Trigger video transcription manually
+      await trigger(downloadUrl, s3Directory);
+
+      return { s3Directory };
+    },
+  });
+
+  const externalUploadMutation = useMutation({
+    onMutate: () => {
+      setStatus("triggering video upload to our storage");
+    },
+    mutationFn: async ({ url }: { url: string }) => {
+      // Video transcription will be triggered automatically
+      return fetchAndTrigger(url);
     },
   });
 
   const onSubmit = handleSubmit(async (formData) => {
-    const { videoUrl, s3Directory } = formData.videoUrl
-      ? {
-          videoUrl: formData.videoUrl,
-          s3Directory: encodeURIComponent(formData.videoUrl),
-        }
-      : await uploadMutation.mutateAsync();
-
-    console.log({ videoUrl, s3Directory });
-    const json = await fetchTranscriptionResult(s3Directory);
-    if (!json) await triggerVideoTranscription(videoUrl);
+    const { s3Directory } = formData.videoUrl
+      ? await externalUploadMutation.mutateAsync({ url: formData.videoUrl })
+      : await localUploadMutation.mutateAsync({ file: acceptedFiles[0] });
 
     startTransition(() => {
       router.push(`/video/${s3Directory}`);
     });
   });
 
-  if (uploadMutation.isPending)
+  if (localUploadMutation.isPending)
     return (
       <div className="flex w-full max-w-[512px]">
         <Loader message="Uploading your video" />
@@ -93,7 +100,7 @@ export default function VideoForm() {
   if (isSubmitting || isPending)
     return (
       <div className="flex w-full max-w-[512px]">
-        <Loader message="Initializing video processing" />
+        <Loader message={`Video processing.. status=${status}`} />
       </div>
     );
 
@@ -149,7 +156,7 @@ export default function VideoForm() {
         disabled={
           isSubmitting ||
           isPending ||
-          uploadMutation.isPending ||
+          localUploadMutation.isPending ||
           !isValid ||
           (!isDirty && acceptedFiles.length === 0)
         }

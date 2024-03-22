@@ -2,7 +2,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function useRefresher({
-  interval = 3000,
+  interval = 7000,
   enabled = true,
 }: {
   interval?: number;

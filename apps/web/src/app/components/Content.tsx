@@ -9,19 +9,21 @@ import Search from "@/app/components/Search";
 
 import useZodForm from "@/app/hooks/useZodForm";
 
-import { JsonSchema } from "@/app/utils/json.schema";
-import { STEP, useThumbnailer } from "@/app/utils/thumbnailer";
-import useRefresher from "@/app/utils/useRefresher";
+import { TranscriptionsSchema } from "@/app/twelveLabs/utils";
 
-import Loader from "@/app/video/[...s3DirectoryPath]/loader";
+import useRefresher from "@/app/utils/useRefresher";
+import { useThumbnailer, STEP } from "@/app/utils/thumbnailer";
+
+import Loader from "@/app/video/[s3DirectoryPath]/loader";
 
 export const schema = z.object({
   searchQuery: z.string(),
 });
 
 interface Props {
-  data: JsonSchema | null;
+  data: TranscriptionsSchema | null;
   videoUrl: string | null;
+  refreshInterval?: number;
 }
 
 function getLoaderMessage(videoDurationSeconds?: number) {
@@ -35,8 +37,8 @@ function getLoaderMessage(videoDurationSeconds?: number) {
   return "Waiting for transcription results. Your video is pretty large, it make take some time (up to half of the video duration). You can save this link and come back later!";
 }
 
-const Content = ({ data, videoUrl }: Props) => {
-  useRefresher({ enabled: !(data && videoUrl) });
+const Content = ({ data, videoUrl, refreshInterval }: Props) => {
+  useRefresher({ enabled: !(data && videoUrl), interval: refreshInterval });
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -113,8 +115,8 @@ const Content = ({ data, videoUrl }: Props) => {
                 return (
                   <CaptionsEntry
                     key={entry.from}
-                    entry={entry}
                     videoRef={videoRef}
+                    entry={entry}
                     thumbnailSrc={
                       thumbnails[Math.floor(entry.from / (STEP * 1000))] ||
                       _.last(thumbnails)

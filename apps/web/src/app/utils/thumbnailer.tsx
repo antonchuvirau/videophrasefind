@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 
 // Most of this code was copy-pasted
 // TODO: refactor
-export function videoScreenshotGetter(videoEl: HTMLVideoElement) {
+function videoScreenshotGetter(videoEl: HTMLVideoElement) {
   let internals = {
     videoEl,
     videoDuration: videoEl.duration,

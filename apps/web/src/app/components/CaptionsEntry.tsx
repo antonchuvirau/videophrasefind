@@ -2,6 +2,7 @@ import _ from "lodash";
 import { intervalToDuration } from "date-fns";
 import { Entry } from "@plussub/srt-vtt-parser/dist/src/types";
 import { RefObject } from "react";
+import Image from "next/image";
 
 function padTime(time?: number) {
   return _.padStart(time?.toFixed(0), 2, "0");
@@ -39,10 +40,12 @@ export default function CaptionsEntry({
     >
       <div className="relative aspect-video h-16 rounded-xl bg-[#ffffff1f]">
         {thumbnailSrc && (
-          <img
+          <Image
+            fill
             src={thumbnailSrc}
-            className="max-h-fit w-full overflow-hidden rounded-xl"
-            alt=""
+            alt="thumbnail"
+            objectFit="contain"
+            className="rounded-xl"
           />
         )}
       </div>

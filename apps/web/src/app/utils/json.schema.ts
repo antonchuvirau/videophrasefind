@@ -7,7 +7,7 @@ function padTime(time?: number) {
   return _.padStart(time?.toFixed(0), 2, "0");
 }
 
-function secondsToVttFormat(seconds: number) {
+export function secondsToVttFormat(seconds: number) {
   const duration = intervalToDuration({
     start: 0,
     end: seconds * 1000,

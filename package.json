@@ -1,48 +1,16 @@
 {
   "name": "videophrasefind",
-  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.454.0",
-    "@aws-sdk/s3-request-presigner": "^3.461.0",
-    "@faker-js/faker": "^8.2.0",
-    "@hookform/resolvers": "^3.3.2",
-    "@plussub/srt-vtt-parser": "^1.1.0",
-    "@tanstack/react-query": "^5.8.1",
-    "@vercel/analytics": "^1.2.2",
-    "bluebird": "^3.7.2",
-    "date-fns": "^2.30.0",
-    "lodash": "^4.17.21",
-    "next": "^14.0.1",
-    "react": "^18.2.0",
-    "react-cool-inview": "^3.0.1",
-    "react-dom": "^18.2.0",
-    "react-dropzone": "^14.2.3",
-    "react-hook-form": "^7.48.2",
-    "react-hot-toast": "^2.4.1",
-    "uuid": "^9.0.1",
-    "zod": "^3.22.4"
+    "dev": "FORCE_COLOR=1 turbo run dev --parallel",
+    "build": "FORCE_COLOR=1 turbo run build",
+    "test": "FORCE_COLOR=1 turbo run test",
+    "test:ui": "FORCE_COLOR=1 turbo run test:ui",
+    "start": "FORCE_COLOR=1 turbo run start"
   },
   "devDependencies": {
-    "@types/bluebird": "^3.5.42",
-    "@types/lodash": "^4.14.200",
-    "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
-    "@types/uuid": "^9.0.7",
-    "autoprefixer": "^10.4.17",
-    "eslint": "^8",
-    "eslint-config-next": "^14.0.1",
-    "postcss": "^8.4.35",
     "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.11",
-    "tailwindcss": "^3.4.1",
-    "typescript": "^5"
-  }
+    "turbo": "^1.13.0"
+  },
+  "packageManager": "pnpm@8.6.2"
 }

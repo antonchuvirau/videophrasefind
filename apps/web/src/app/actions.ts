@@ -1,25 +1,8 @@
 "use server";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { jsonSchema } from "@/app/utils/json.schema";
 import { v4 as uuid } from "uuid";
 import { getS3DirectoryUrl } from "@/app/utils/s3";
-
-// This function should be triggered, but not awaited - the job is very long
-export async function triggerVideoTranscription(rawVideoUrl: string) {
-  console.log("Triggering video transcription:", rawVideoUrl);
-  fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ""}/search`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ url: rawVideoUrl }),
-    cache: "no-cache",
-  });
-  // Add a delay to make sure that request above has hit the API
-  await new Promise((res) => setTimeout(res, 8000));
-  return "triggered";
-}
 
 export async function getVideoUrl(s3Directory: string) {
   const url = `${getS3DirectoryUrl(s3Directory)}/video.webm`;
@@ -31,18 +14,6 @@ export async function getVideoUrl(s3Directory: string) {
   }
 
   return url;
-}
-
-export async function fetchTranscriptionResult(s3Directory: string) {
-  const url = `${getS3DirectoryUrl(s3Directory)}/result.json`;
-  console.log(`Fetching transcriptions from ${url}`);
-  const res = await fetch(url, { cache: "no-cache" });
-
-  if (res.status !== 200) {
-    return null;
-  }
-
-  return jsonSchema.parse(await res.json());
 }
 
 export async function getUploadUrl() {
@@ -64,4 +35,34 @@ export async function getUploadUrl() {
   const uploadUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
   const downloadUrl = uploadUrl.replace(/\?.*/, "");
   return { uploadUrl, s3Directory: id, downloadUrl };
+}
+
+export async function trigger(url: string, indexName: string) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/trigger`, {
+    method: "POST",
+    body: JSON.stringify({ indexName, url }),
+    headers: {
+      accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    cache: "no-cache",
+  });
+  return res.json();
+}
+
+export async function fetchAndTrigger(url: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/fetch-and-trigger`,
+    {
+      method: "POST",
+      body: JSON.stringify({ url }),
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      cache: "no-cache",
+    },
+  );
+  const { s3Directory } = await res.json();
+  return { s3Directory };
 }
