@@ -7,7 +7,7 @@ import type {
   Path,
   UseFormRegister,
 } from "react-hook-form";
-import Label from "@/app/components/Label";
+import Label from "./Label";
 
 type Props<T extends FieldValues> = InputHTMLAttributes<HTMLInputElement> & {
   name: Path<T>;

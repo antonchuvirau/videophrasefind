@@ -7,10 +7,10 @@ import { useState, useTransition } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
-import useZodForm from "@/app/hooks/useZodForm";
+import useZodForm from "@/hooks/useZodForm";
 
-import Button from "@/app/components/Button";
-import Input from "@/app/components/Input";
+import Button from "@/components/Button";
+import Input from "@/components/Input";
 
 import { fetchAndTrigger, getUploadUrl, trigger } from "@/app/actions";
 

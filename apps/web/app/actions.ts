@@ -1,8 +1,15 @@
 "use server";
+
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { v4 as uuid } from "uuid";
-import { getS3DirectoryUrl } from "@/app/utils/s3";
+import { type SearchData } from "twelvelabs-js";
+
+import { getS3DirectoryUrl } from "@/lib/s3";
+
+import { type Entry } from "@plussub/srt-vtt-parser/dist/src/types";
+
+import { client12Labs } from "@/twelveLabs/client";
 
 export async function getVideoUrl(s3Directory: string) {
   const url = `${getS3DirectoryUrl(s3Directory)}/video.webm`;
@@ -65,4 +72,31 @@ export async function fetchAndTrigger(url: string) {
   );
   const { s3Directory } = await res.json();
   return { s3Directory };
+}
+
+export async function getSemanticSearchResult(
+  indexName: string,
+  query: string,
+) {
+  const [index] = await client12Labs.index.list({ name: indexName });
+
+  const search = await client12Labs.search.query({
+    indexId: index.id,
+    query: query,
+    options: ["conversation"],
+    conversationOption: "semantic",
+  });
+
+  const result = (search.data as SearchData[]).map((clip) => ({
+    entry: {
+      id: "",
+      from: clip.start * 1000,
+      to: clip.end * 1000,
+      text: clip.metadata?.[0].text,
+    } as Entry,
+    thumbnailSrc: clip.thumbnailUrl,
+    confidence: clip.confidence,
+  }));
+
+  return result;
 }

@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 
-import VideoForm from "@/app/components/VideoForm";
+import VideoForm from "@/components/VideoForm";
 
 export const metadata: Metadata = {
   title: "Home - VideoPhraseFind",

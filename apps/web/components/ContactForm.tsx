@@ -2,11 +2,11 @@
 
 import { z } from "zod";
 
-import useZodForm from "@/app/hooks/useZodForm";
+import useZodForm from "@/hooks/useZodForm";
 
-import Input from "@/app/components/Input";
-import Button from "@/app/components/Button";
-import { TextArea } from "@/app/components/TextArea";
+import Input from "@/components/Input";
+import Button from "@/components/Button";
+import { TextArea } from "@/components/TextArea";
 
 const contactSchema = z.object({
   name: z.string().min(1, { message: "Name is required" }),

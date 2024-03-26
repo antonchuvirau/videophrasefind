@@ -1,7 +1,23 @@
 import { z } from "zod";
 import { parse } from "@plussub/srt-vtt-parser";
+import { intervalToDuration } from "date-fns";
+import _ from "lodash";
 
-import { secondsToVttFormat } from "../utils/json.schema";
+function padTime(time?: number) {
+  return _.padStart(time?.toFixed(0), 2, "0");
+}
+
+function secondsToVttFormat(seconds: number) {
+  const duration = intervalToDuration({
+    start: 0,
+    end: seconds * 1000,
+  });
+
+  const milliseconds = (seconds - Math.floor(seconds)) * 1000;
+  return `${padTime(duration?.minutes)}:${padTime(
+    duration?.seconds,
+  )}.${_.padEnd(milliseconds.toFixed(0), 3, "0")}`;
+}
 
 export const transcriptionsSchema = z
   .object({
