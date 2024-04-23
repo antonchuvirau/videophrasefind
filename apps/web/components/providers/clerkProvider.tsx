@@ -8,21 +8,18 @@ export default function ClerkProvider({
   return (
     <CP
       appearance={{
-        layout: {
-          socialButtonsPlacement: "top",
-        },
         variables: {
-          colorText: "white",
           colorPrimary: "#9333ea",
+          colorBackground: "#0b111a", // card bg -> #0b1019 irl, without 'card: "bg-[#0b111a]"',
+          colorText: "white",
           colorInputBackground: "transparent",
           colorInputText: "#9DA3AE",
-          borderRadius: "0.5rem",
-          // TODO: migrate colorAlphaShade: "#e2e8f0",
+          colorNeutral: "#cbd5e1",
+          colorSuccess: "#6ee7b7", // emerald-300
+          colorDanger: "#ef4444", // red-500
         },
         elements: {
-          card: "shadow-none bg-[#0b111a]",
-          footer: "justify-center",
-          footerAction: "gap-2",
+          card: "bg-[#0b111a]",
           providerIcon__apple: "invert-[1]",
         },
       }}
