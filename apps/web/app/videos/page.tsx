@@ -31,6 +31,7 @@ const getVideos = async (userId: string) => {
 
 export default async function VideosPage() {
   const { userId } = auth().protect();
+
   const videos = await getVideos(userId);
 
   if (videos.length === 0)

@@ -91,7 +91,7 @@ const Header = () => {
                 </Link>
               </SignedOut>
               <SignedIn>
-                <UserButton afterSignOutUrl="/" />
+                <UserButton />
               </SignedIn>
             </ClerkLoaded>
           </div>
