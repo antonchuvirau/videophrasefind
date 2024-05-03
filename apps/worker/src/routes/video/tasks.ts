@@ -2,7 +2,12 @@ import { db } from "database";
 
 import { client12Labs } from "../../twelveLabs/client";
 
-import { get12LabsVideoId, get12LabsIndexId } from "./utils";
+import {
+  get12LabsVideoId,
+  get12LabsIndexId,
+  getVideoProcessingStatus,
+  getHLS,
+} from "./utils";
 
 export const triggerUpdateVideoProcessingStatusTask = async ({
   videoId,
@@ -17,12 +22,10 @@ export const triggerUpdateVideoProcessingStatusTask = async ({
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
-  let status = (await client12Labs.task.list({ indexId: twelveLabsIndexId }))[0]
-    ?.status;
+  let status = await getVideoProcessingStatus(twelveLabsIndexId);
 
   while (status !== "ready") {
-    status = (await client12Labs.task.list({ indexId: twelveLabsIndexId }))[0]
-      ?.status;
+    status = await getVideoProcessingStatus(twelveLabsIndexId);
     console.log("waiting for video ready...", { status });
     await new Promise((resolve) => setTimeout(resolve, 5000));
   }
@@ -75,20 +78,10 @@ export const triggerSaveMetadataTask = async ({
     },
   });
 
-  let hls = (
-    await client12Labs.index.video.retrieve(
-      twelveLabsIndexId,
-      twelveLabsVideoId
-    )
-  ).hls;
+  let hls = await getHLS({ twelveLabsIndexId, twelveLabsVideoId });
 
   while (!hls) {
-    hls = (
-      await client12Labs.index.video.retrieve(
-        twelveLabsIndexId,
-        twelveLabsVideoId
-      )
-    ).hls;
+    hls = await getHLS({ twelveLabsIndexId, twelveLabsVideoId });
     console.log("waiting for hls ready...", { hls });
     await new Promise((resolve) => setTimeout(resolve, 500));
   }

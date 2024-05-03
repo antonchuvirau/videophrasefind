@@ -15,3 +15,22 @@ export const get12LabsVideoId = async (indexId: string) => {
 
   return video?.id;
 };
+
+export const getVideoProcessingStatus = async (indexId: string) => {
+  return (await client12Labs.task.list({ indexId }))[0]?.status;
+};
+
+export const getHLS = async ({
+  twelveLabsIndexId,
+  twelveLabsVideoId,
+}: {
+  twelveLabsIndexId: string;
+  twelveLabsVideoId: string;
+}) => {
+  return (
+    await client12Labs.index.video.retrieve(
+      twelveLabsIndexId,
+      twelveLabsVideoId
+    )
+  ).hls;
+};
