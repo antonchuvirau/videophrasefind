@@ -62,7 +62,7 @@ export default function VideoForm() {
     onMutate: () => {
       setStatus("Triggering video upload to our storage...");
     },
-    mutationFn: ({ ytUrl, videoId }: { ytUrl: string; videoId: string }) => 
+    mutationFn: ({ ytUrl, videoId }: { ytUrl: string; videoId: string }) =>
       fetchAndTrigger(ytUrl, videoId), // Video transcription on 12Labs will be triggered automatically
   });
 
@@ -82,7 +82,13 @@ export default function VideoForm() {
     },
   });
 
-  if (isSubmitting || isPending)
+  if (
+    isSubmitting ||
+    isPending ||
+    localUploadMutation.isPending ||
+    externalUploadMutation.isPending ||
+    createVideoMutation.isPending
+  )
     return (
       <div className="flex w-full max-w-[512px] flex-col items-center gap-4">
         <Icons.spinner className="size-20 animate-spin text-[#9DA3AE]" />
@@ -172,6 +178,8 @@ export default function VideoForm() {
           isSubmitting ||
           isPending ||
           localUploadMutation.isPending ||
+          externalUploadMutation.isPending ||
+          createVideoMutation.isPending ||
           !isValid ||
           (!isDirty && acceptedFiles.length === 0)
         }
