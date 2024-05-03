@@ -11,7 +11,7 @@ export const get12LabsIndexId = async (videoId: string) => {
 };
 
 export const get12LabsVideoId = async (indexId: string) => {
-  const [index] = await client12Labs.index.video.list(indexId);
+  const [video] = await client12Labs.index.video.list(indexId);
 
-  return index?.id;
+  return video?.id;
 };
