@@ -35,7 +35,7 @@ export async function getVideo12LabsIds(videoId: string) {
   return { ...data };
 }
 
-export async function saveVideo() {
+export async function createVideo() {
   const { userId } = auth();
 
   const video = await db.video.create({

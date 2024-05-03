@@ -23,18 +23,15 @@ export async function getUploadUrl(videoId: string) {
     Key: `videos/${videoId}/video.webm`,
   });
 
-  const uploadUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
-  const downloadUrl = uploadUrl.replace(/\?.*/, "");
-
-  return { uploadUrl, downloadUrl };
+  return await getSignedUrl(client, command, { expiresIn: 3600 }); // uploadUrl = getSignedUrl(client, command, { expiresIn: 3600 });
 }
 
-export async function trigger(url: string, videoId: string) {
+export async function trigger(videoId: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/trigger`,
     {
       method: "POST",
-      body: JSON.stringify({ url, videoId }),
+      body: JSON.stringify({ videoId }),
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
@@ -42,19 +39,19 @@ export async function trigger(url: string, videoId: string) {
       cache: "no-cache",
     },
   );
-  return res.json();
+  return z
+    .object({
+      message: z.string(),
+    })
+    .parse(await res.json());
 }
 
-export async function fetchAndTrigger(url: string, videoId: string) {
-  const schema = z.object({
-    videoTitle: z.string(),
-  });
-
+export async function fetchAndTrigger(ytUrl: string, videoId: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/fetch-and-trigger`,
     {
       method: "POST",
-      body: JSON.stringify({ url, videoId }),
+      body: JSON.stringify({ url: ytUrl, videoId }),
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
@@ -62,8 +59,11 @@ export async function fetchAndTrigger(url: string, videoId: string) {
       cache: "no-cache",
     },
   );
-
-  return schema.parse(await res.json());
+  return z
+    .object({
+      message: z.string(),
+    })
+    .parse(await res.json());
 }
 
 export async function getSemanticSearchResult(videoId: string, query: string) {

@@ -11,14 +11,13 @@ import useZodForm from "@/hooks/useZodForm";
 
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import { Icons } from "@/components/Icons";
 
 import { fetchAndTrigger, getUploadUrl, trigger } from "@/app/actions";
-import { saveVideo, saveVideoTitle } from "@/app/video-actions";
-
-import { Icons } from "./Icons";
+import { createVideo, saveVideoTitle } from "@/app/video-actions";
 
 export const schema = z.object({
-  videoUrl: z
+  ytUrl: z
     .string()
     .url({ message: "Invalid URL" })
     .transform((s) => s.replaceAll(/&.*$/g, "")) // Cleanup youtube links
@@ -39,7 +38,7 @@ export default function VideoForm() {
   } = useZodForm({
     schema,
     defaultValues: {
-      videoUrl: "",
+      ytUrl: "",
     },
     mode: "onBlur",
   });
@@ -52,38 +51,35 @@ export default function VideoForm() {
     </li>
   ));
 
-  const localUploadMutation = useMutation({
+  const createVideoMutation = useMutation({
     onMutate: () => {
-      setStatus("uploading your video to our storage...");
+      setStatus("Triggering save video metadata jobs...");
     },
-    mutationFn: async ({ file, videoId }: { file: File; videoId: string }) => {
-      const { uploadUrl, downloadUrl } = await getUploadUrl(videoId);
-
-      await fetch(uploadUrl, {
-        method: "PUT",
-        body: file,
-      });
-
-      // Trigger video transcription manually
-      await trigger(downloadUrl, videoId);
-
-      return { videoTitle: file.name.split(".")[0] };
-    },
+    mutationFn: () => createVideo(),
   });
 
   const externalUploadMutation = useMutation({
     onMutate: () => {
-      setStatus("triggering video upload to our storage...");
+      setStatus("Triggering video upload to our storage...");
     },
-    mutationFn: ({ url, videoId }: { url: string; videoId: string }) =>
-      fetchAndTrigger(url, videoId), // Video transcription will be triggered automatically
+    mutationFn: ({ ytUrl, videoId }: { ytUrl: string; videoId: string }) => 
+      fetchAndTrigger(ytUrl, videoId), // Video transcription on 12Labs will be triggered automatically
   });
 
-  const saveVideoMutation = useMutation({
+  const localUploadMutation = useMutation({
     onMutate: () => {
-      setStatus("triggering save video metadata job...");
+      setStatus("Uploading your video to our storage...");
     },
-    mutationFn: () => saveVideo(),
+    mutationFn: async ({ file, videoId }: { file: File; videoId: string }) => {
+      await fetch(await getUploadUrl(videoId), {
+        method: "PUT",
+        body: file,
+      });
+
+      await saveVideoTitle({ videoTitle: file.name.split(".")[0], videoId });
+
+      await trigger(videoId); // Trigger video transcription on 12Labs manually
+    },
   });
 
   if (isSubmitting || isPending)
@@ -101,21 +97,29 @@ export default function VideoForm() {
 
   return (
     <form
-      onSubmit={handleSubmit(async ({ videoUrl }) => {
-        const videoId = await saveVideoMutation.mutateAsync();
+      onSubmit={handleSubmit(({ ytUrl }) => {
+        createVideoMutation.mutate(undefined, {
+          onSuccess: async (videoId) => {
+            if (ytUrl) {
+              await externalUploadMutation.mutateAsync({
+                ytUrl,
+                videoId,
+              });
+            } else {
+              await localUploadMutation.mutateAsync({
+                file: acceptedFiles[0],
+                videoId,
+              });
+            }
 
-        const { videoTitle } = videoUrl
-          ? await externalUploadMutation.mutateAsync({ url: videoUrl, videoId })
-          : await localUploadMutation.mutateAsync({
-              file: acceptedFiles[0],
-              videoId,
+            /*
+              If I do redirect on the server side,
+              redirect time is not included in the mutation isPending time
+            */
+            startTransition(() => {
+              router.push(`/video/${videoId}`);
             });
-
-        await saveVideoTitle({ videoTitle, videoId });
-
-        // If I do redirect on the server side -> redirect time is not included in the mutation isPending time
-        startTransition(() => {
-          router.push(`/video/${videoId}`);
+          },
         });
       })}
       className="flex w-full flex-col items-center gap-8 rounded-[32px] bg-[#0B111A] p-4 min-[1050px]:max-w-[512px]"
@@ -158,7 +162,7 @@ export default function VideoForm() {
       <Input
         className="w-full"
         placeholder="Paste video URL"
-        name="videoUrl"
+        name="ytUrl"
         register={register}
         errors={errors}
       />
