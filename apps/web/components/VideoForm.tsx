@@ -78,7 +78,7 @@ export default function VideoForm() {
 
       await saveVideoTitle({ videoTitle: file.name.split(".")[0], videoId });
 
-      await trigger(videoId); // Trigger video transcription on 12Labs manually
+      return trigger(videoId); // Trigger video transcription on 12Labs manually
     },
   });
 
@@ -107,17 +107,18 @@ export default function VideoForm() {
         createVideoMutation.mutate(undefined, {
           onSuccess: async (videoId) => {
             if (ytUrl) {
-              await externalUploadMutation.mutateAsync({
+              const { message } = await externalUploadMutation.mutateAsync({
                 ytUrl,
                 videoId,
               });
+              console.log({ message });
             } else {
-              await localUploadMutation.mutateAsync({
+              const { message } = await localUploadMutation.mutateAsync({
                 file: acceptedFiles[0],
                 videoId,
               });
+              console.log({ message });
             }
-
             /*
               If I do redirect on the server side,
               redirect time is not included in the mutation isPending time
