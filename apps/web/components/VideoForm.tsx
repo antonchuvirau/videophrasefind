@@ -13,7 +13,7 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 
 import { fetchAndTrigger, getUploadUrl, trigger } from "@/app/actions";
-import { saveVideo } from "@/app/video-actions";
+import { saveVideo, saveVideoTitle } from "@/app/video-actions";
 
 import { Icons } from "./Icons";
 
@@ -56,8 +56,8 @@ export default function VideoForm() {
     onMutate: () => {
       setStatus("uploading your video to our storage...");
     },
-    mutationFn: async ({ file }: { file: File }) => {
-      const { uploadUrl, s3Directory, downloadUrl } = await getUploadUrl();
+    mutationFn: async ({ file, videoId }: { file: File; videoId: string }) => {
+      const { uploadUrl, downloadUrl } = await getUploadUrl(videoId);
 
       await fetch(uploadUrl, {
         method: "PUT",
@@ -65,9 +65,9 @@ export default function VideoForm() {
       });
 
       // Trigger video transcription manually
-      await trigger(downloadUrl, s3Directory);
+      await trigger(downloadUrl, videoId);
 
-      return { s3Directory, videoTitle: file.name.split(".")[0] };
+      return { videoTitle: file.name.split(".")[0] };
     },
   });
 
@@ -75,15 +75,15 @@ export default function VideoForm() {
     onMutate: () => {
       setStatus("triggering video upload to our storage...");
     },
-    mutationFn: ({ url }: { url: string }) => fetchAndTrigger(url), // Video transcription will be triggered automatically
+    mutationFn: ({ url, videoId }: { url: string; videoId: string }) =>
+      fetchAndTrigger(url, videoId), // Video transcription will be triggered automatically
   });
 
   const saveVideoMutation = useMutation({
     onMutate: () => {
       setStatus("triggering save video metadata job...");
     },
-    mutationFn: (data: { videoTitle: string; indexName: string }) =>
-      saveVideo({ videoTitle: data.videoTitle, indexName: data.indexName }),
+    mutationFn: () => saveVideo(),
   });
 
   if (isSubmitting || isPending)
@@ -102,14 +102,16 @@ export default function VideoForm() {
   return (
     <form
       onSubmit={handleSubmit(async ({ videoUrl }) => {
-        const { s3Directory, videoTitle } = videoUrl
-          ? await externalUploadMutation.mutateAsync({ url: videoUrl })
-          : await localUploadMutation.mutateAsync({ file: acceptedFiles[0] });
+        const videoId = await saveVideoMutation.mutateAsync();
 
-        const videoId = await saveVideoMutation.mutateAsync({
-          indexName: s3Directory,
-          videoTitle,
-        });
+        const { videoTitle } = videoUrl
+          ? await externalUploadMutation.mutateAsync({ url: videoUrl, videoId })
+          : await localUploadMutation.mutateAsync({
+              file: acceptedFiles[0],
+              videoId,
+            });
+
+        await saveVideoTitle({ videoTitle, videoId });
 
         // If I do redirect on the server side -> redirect time is not included in the mutation isPending time
         startTransition(() => {

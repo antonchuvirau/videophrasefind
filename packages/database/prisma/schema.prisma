@@ -16,7 +16,7 @@ enum Status {
 model Video {
   id String @id @default(cuid())
 
-  title        String
+  title        String?
   duration     Decimal?
   size         Int?
   thumbnailUrl String?
@@ -25,9 +25,7 @@ model Video {
   userId String?
 
   twelveLabsVideoId String?
-
-  indexId   String?
-  indexName String
+  twelveLabsIndexId String?
 
   createdAt DateTime @default(now())
 }

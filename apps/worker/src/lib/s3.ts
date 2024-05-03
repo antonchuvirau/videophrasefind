@@ -1,10 +1,7 @@
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { v4 as uuid } from "uuid";
 
-export async function getUploadUrl(id?: string) {
-  const videoId = id ? id : uuid();
-
+export async function getUploadUrl(videoId: string) {
   const client = new S3Client({
     region: process.env.AWS_REGION || "eu-north-1",
     credentials: {
@@ -21,5 +18,5 @@ export async function getUploadUrl(id?: string) {
   const uploadUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
   const downloadUrl = uploadUrl.replace(/\?.*/, "");
 
-  return { uploadUrl, s3Directory: videoId, downloadUrl };
+  return { uploadUrl, downloadUrl };
 }

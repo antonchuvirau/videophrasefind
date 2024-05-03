@@ -8,19 +8,20 @@ import { getUploadUrl } from "../../lib/s3";
 const app = new Hono();
 
 app.post("/trigger", async (c) => {
-  const { indexName, url } = await c.req.json<{
-    indexName: string;
+  const { url, videoId } = await c.req.json<{
     url: string;
+    videoId: string;
   }>();
-  trigger12LabsTask({ indexName, url });
+  trigger12LabsTask({ url, videoId });
   return c.json({ message: "Job triggered" });
 });
 
 app.post("/fetch-and-trigger", async (c) => {
-  const { url } = await c.req.json<{
+  const { url, videoId } = await c.req.json<{
     url: string;
+    videoId: string;
   }>();
-  console.log("Fetching video", { url });
+  console.log("Fetching video", { url, videoId });
 
   const info = await ytdl.getInfo(url);
 
@@ -41,11 +42,11 @@ app.post("/fetch-and-trigger", async (c) => {
     chunks.push(chunk);
   });
 
-  const s3path = encodeURIComponent(url);
-  const { uploadUrl, downloadUrl, s3Directory } = await getUploadUrl(s3path);
+  const { uploadUrl, downloadUrl } = await getUploadUrl(videoId);
 
   readable.on("end", async () => {
     console.log("Fetching done, uploading to s3", { downloadUrl });
+    
     const blob = new Blob(chunks, { type: mimeType });
     const file = new File([blob], filename, { type: mimeType });
 
@@ -56,10 +57,11 @@ app.post("/fetch-and-trigger", async (c) => {
     });
     console.log("Upload done", { downloadUrl });
 
-    return trigger12LabsTask({ indexName: s3Directory, url: downloadUrl });
+    // return trigger12LabsTask({ url: downloadUrl, videoId });
+    trigger12LabsTask({ url: downloadUrl, videoId });
   });
 
-  return c.json({ s3Directory, videoTitle: info.videoDetails.title });
+  return c.json({ videoTitle: info.videoDetails.title });
 });
 
 export default app;

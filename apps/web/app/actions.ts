@@ -4,16 +4,12 @@ import { z } from "zod";
 import { type Entry } from "@plussub/srt-vtt-parser/dist/src/types";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { v4 as uuid } from "uuid";
 import { type SearchData } from "twelvelabs-js";
-
-import { getVideoIndexId } from "@/app/video-actions";
+import { db } from "database";
 
 import { client12Labs } from "@/twelveLabs/client";
 
-export async function getUploadUrl() {
-  const id = uuid();
-
+export async function getUploadUrl(videoId: string) {
   const client = new S3Client({
     region: process.env.AWS_REGION || "eu-north-1",
     credentials: {
@@ -24,20 +20,21 @@ export async function getUploadUrl() {
 
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET || "",
-    Key: `videos/${id}/video.webm`,
+    Key: `videos/${videoId}/video.webm`,
   });
 
   const uploadUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
   const downloadUrl = uploadUrl.replace(/\?.*/, "");
-  return { uploadUrl, s3Directory: id, downloadUrl };
+
+  return { uploadUrl, downloadUrl };
 }
 
-export async function trigger(url: string, indexName: string) {
+export async function trigger(url: string, videoId: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/trigger`,
     {
       method: "POST",
-      body: JSON.stringify({ indexName, url }),
+      body: JSON.stringify({ url, videoId }),
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
@@ -48,9 +45,8 @@ export async function trigger(url: string, indexName: string) {
   return res.json();
 }
 
-export async function fetchAndTrigger(url: string) {
+export async function fetchAndTrigger(url: string, videoId: string) {
   const schema = z.object({
-    s3Directory: z.string(),
     videoTitle: z.string(),
   });
 
@@ -58,7 +54,7 @@ export async function fetchAndTrigger(url: string) {
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/fetch-and-trigger`,
     {
       method: "POST",
-      body: JSON.stringify({ url }),
+      body: JSON.stringify({ url, videoId }),
       headers: {
         accept: "application/json",
         "Content-Type": "application/json",
@@ -71,12 +67,16 @@ export async function fetchAndTrigger(url: string) {
 }
 
 export async function getSemanticSearchResult(videoId: string, query: string) {
-  const indexId = await getVideoIndexId(videoId);
+  const video = await db.video.findUnique({
+    where: {
+      id: videoId,
+    },
+  });
 
-  if (!indexId) return [];
+  if (!video?.twelveLabsIndexId) return [];
 
   const search = await client12Labs.search.query({
-    indexId,
+    indexId: video.twelveLabsIndexId,
     query: query,
     options: ["conversation"],
     conversationOption: "semantic",

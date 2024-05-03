@@ -67,7 +67,14 @@ export default async function VideosPage() {
               )}
             </div>
             <div className="flex flex-1 flex-col justify-between overflow-hidden">
-              <h2 className="truncate text-2xl font-bold">{`${video.title}`}</h2>
+              {video.title ? (
+                <h2 className="truncate text-2xl font-bold">{`${video.title}`}</h2>
+              ) : (
+                <span className="flex items-center gap-2 text-2xl font-bold">
+                  Waiting for a title
+                  <Icons.spinner className="size-5 animate-spin" />
+                </span>
+              )}
               <div className="flex items-center justify-between">
                 <span className="flex gap-2 text-white/70">
                   <Icons.videoSize strokeWidth={1.5} className="size-5" />

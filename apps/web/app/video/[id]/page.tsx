@@ -31,12 +31,14 @@ async function getTranscriptions(videoId: string) {
 
   if (status !== "READY") return { ready: false, data: null };
 
-  const { twelveLabsVideoId, indexId } = await getVideo12LabsIds(videoId);
+  const { twelveLabsVideoId, twelveLabsIndexId } =
+    await getVideo12LabsIds(videoId);
 
-  if (!twelveLabsVideoId || !indexId) return { ready: false, data: null };
+  if (!twelveLabsVideoId || !twelveLabsIndexId)
+    return { ready: false, data: null };
 
   const transcriptions = await client12Labs.index.video.transcription(
-    indexId,
+    twelveLabsIndexId,
     twelveLabsVideoId,
   );
 
