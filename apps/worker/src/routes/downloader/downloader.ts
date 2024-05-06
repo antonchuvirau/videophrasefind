@@ -2,37 +2,12 @@ import { Hono } from "hono";
 import ytdl from "ytdl-core";
 import { db } from "database";
 
-import {
-  getS3DirectoryUrl,
-  getCroppedUploadUrl,
-  getUploadUrl,
-} from "../../lib/s3";
+import { getS3DirectoryUrl, getUploadUrl } from "../../lib/s3";
 
+import { cropAndUpload } from "./utils";
 import { trigger12LabsTask } from "./tasks";
-import { cropVideo, deleteLocalVideoFile, readLocalVideoFile } from "./utils";
 
 const app = new Hono();
-
-async function cropAndUpload(videoId: string) {
-  try {
-    const cropVideoResponse = await cropVideo(videoId);
-    console.log({ ...cropVideoResponse });
-
-    const file = await readLocalVideoFile(videoId);
-    console.log({ message: "Finish reading file" });
-
-    await fetch(await getCroppedUploadUrl(videoId), {
-      method: "PUT",
-      body: file,
-    });
-    console.log({ message: "Finish uploading to s3" });
-
-    const deleteLocalVideoResponse = await deleteLocalVideoFile(videoId);
-    console.log({ ...deleteLocalVideoResponse });
-  } catch (error) {
-    console.log(error);
-  }
-}
 
 app.get("/crop-and-upload", async (c) => {
   // cropAndUpload("clvqv8rb50000baqobltklw28");
