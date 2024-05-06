@@ -29,11 +29,13 @@ export const schema = z.object({
 });
 
 export default function VideoForm() {
-  const router = useRouter();
-
   const [status, setStatus] = useState("no status");
 
   const [isPending, startTransition] = useTransition();
+
+  const router = useRouter();
+
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
 
   const {
     register,
@@ -46,8 +48,6 @@ export default function VideoForm() {
     },
     mode: "onBlur",
   });
-
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
 
   const files = acceptedFiles.map((file: FileWithPath) => (
     <li key={file.path}>
