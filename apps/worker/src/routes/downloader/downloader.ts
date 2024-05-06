@@ -67,7 +67,7 @@ app.post("/fetch-and-trigger", async (c) => {
     const blob = new Blob(chunks, { type: mimeType });
     const file = new File([blob], filename, { type: mimeType });
 
-    await fetch(await getUploadUrl(videoId), {
+    await fetch(await getUploadUrl(videoId, "full"), {
       method: "PUT",
       body: file,
     });

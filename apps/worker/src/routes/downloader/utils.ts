@@ -1,11 +1,11 @@
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 
-import { getCroppedUploadUrl, getS3DirectoryUrl } from "../../lib/s3";
+import { getUploadUrl, getS3DirectoryUrl } from "../../lib/s3";
 
 const MIME_TYPE = "mp4";
 
-export const MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE = 60 * 2;
+export const MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE = 60 * 1;
 
 function getLocalVideoPath(videoId: string) {
   return `./temp/${videoId}.${MIME_TYPE}`;
@@ -19,7 +19,7 @@ export async function cropAndUpload(videoId: string) {
     const file = await readLocalVideoFile(videoId);
     console.log({ message: "Finish reading file" });
 
-    await fetch(await getCroppedUploadUrl(videoId), {
+    await fetch(await getUploadUrl(videoId, "cropped"), {
       method: "PUT",
       body: file,
     });
