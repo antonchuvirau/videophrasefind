@@ -9,7 +9,7 @@ import {
 } from "../../lib/s3";
 
 import { trigger12LabsTask } from "./tasks";
-import { cropVideo, deleteLocalVideo, readLocalVideo } from "./utils";
+import { cropVideo, deleteLocalVideoFile, readLocalVideoFile } from "./utils";
 
 const app = new Hono();
 
@@ -18,7 +18,7 @@ async function cropAndUpload(videoId: string) {
     const cropVideoResponse = await cropVideo(videoId);
     console.log({ ...cropVideoResponse });
 
-    const file = await readLocalVideo(videoId);
+    const file = await readLocalVideoFile(videoId);
     console.log({ message: "Finish reading file" });
 
     await fetch(await getCroppedUploadUrl(videoId), {
@@ -27,7 +27,7 @@ async function cropAndUpload(videoId: string) {
     });
     console.log({ message: "Finish uploading to s3" });
 
-    const deleteLocalVideoResponse = await deleteLocalVideo(videoId);
+    const deleteLocalVideoResponse = await deleteLocalVideoFile(videoId);
     console.log({ ...deleteLocalVideoResponse });
   } catch (error) {
     console.log(error);

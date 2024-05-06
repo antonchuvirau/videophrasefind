@@ -34,7 +34,7 @@ export async function cropVideo(videoId: string) {
   });
 }
 
-export async function readLocalVideo(videoId: string) {
+export async function readLocalVideoFile(videoId: string) {
   return new Promise<File>((resolve, reject) => {
     fs.readFile(getLocalVideoPath(videoId), async (error, data) => {
       if (!error) {
@@ -50,7 +50,7 @@ export async function readLocalVideo(videoId: string) {
   });
 }
 
-export async function deleteLocalVideo(videoId: string) {
+export async function deleteLocalVideoFile(videoId: string) {
   return new Promise<{ message: string }>((resolve, reject) => {
     fs.unlink(getLocalVideoPath(videoId), (error) => {
       if (error) {
