@@ -1,4 +1,5 @@
 import { db } from "database";
+// import { getVideoDurationInSeconds } from "get-video-duration";
 
 import { client12Labs } from "../../twelveLabs/client";
 import { engine } from "../../twelveLabs/engines";
@@ -10,7 +11,9 @@ import { getS3DirectoryUrl } from "../../lib/s3";
 export async function trigger12LabsTask({ videoId }: { videoId: string }) {
   console.log(`Triggering 12Labs task for: ${{ videoId }}`);
 
-  // const duration = await getVideoDurationInSeconds(`${getS3DirectoryUrl(videoId)}/video.webm`)
+  // const duration = await getVideoDurationInSeconds(
+  //   `${getS3DirectoryUrl(videoId)}/video.webm`
+  // );
 
   const index = await client12Labs.index.create({
     name: videoId, // = `${duration > MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE ? "cropped" : "full"}.${videoId}`;
@@ -28,7 +31,7 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
     },
   });
 
-  // if (duration > MAX_ALLOWED_SECONDS) {
+  // if (duration > MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE) {
   //   await cropAndUpload(videoId);
 
   //   await client12Labs.task.create({
