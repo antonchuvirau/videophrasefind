@@ -2,74 +2,41 @@ import { Hono } from "hono";
 import ytdl from "ytdl-core";
 import { db } from "database";
 
-import { trigger12LabsTask } from "./tasks";
-
 import {
   getS3DirectoryUrl,
   getCroppedUploadUrl,
   getUploadUrl,
 } from "../../lib/s3";
 
-import ffmpeg from "fluent-ffmpeg";
-
-import fs from "fs";
+import { trigger12LabsTask } from "./tasks";
+import { cropVideo, deleteLocalVideo, readLocalVideo } from "./utils";
 
 const app = new Hono();
 
-function deleteFile(file: string) {
-  return new Promise((resolve, reject) => {
-    fs.unlink(file, (err) => {
-      if (err) reject(err);
-      resolve(`Successfully deleted: ${file}`);
+async function cropAndUpload(videoId: string) {
+  try {
+    const cropVideoResponse = await cropVideo(videoId);
+    console.log({ ...cropVideoResponse });
+
+    const file = await readLocalVideo(videoId);
+    console.log({ message: "Finish reading file" });
+
+    await fetch(await getCroppedUploadUrl(videoId), {
+      method: "PUT",
+      body: file,
     });
-  });
-}
+    console.log({ message: "Finish uploading to s3" });
 
-function cropAndUpload(videoId: string) {
-  const tempLocalVideoPath = `./temp/${videoId}.mp4`;
-
-  ffmpeg()
-    .input(`${getS3DirectoryUrl(videoId)}/video.webm`)
-    .setStartTime("00:00:00")
-    .setDuration("00:01:00")
-    .on("start", (cmd) => {
-      console.log("Spawned ffmpeg command: " + cmd);
-    })
-    .on("end", () => {
-      console.log("Processing with ffmpeg finished!");
-
-      fs.readFile(tempLocalVideoPath, async (error, data) => {
-        if (!error) {
-          const blob = new Blob([data], { type: "video/mp4" });
-          const file = new File([blob], videoId, { type: "video/mp4" });
-
-          await fetch(await getCroppedUploadUrl(videoId), {
-            method: "PUT",
-            body: file,
-          });
-
-          console.log("Uploading to S3 finished");
-
-          try {
-            const response = await deleteFile(tempLocalVideoPath);
-            console.log(response);
-          } catch (error) {
-            console.log(error);
-          }
-        } else {
-          console.log(error);
-        }
-      });
-    })
-    .on("error", (err) => {
-      console.log("An error occurred: " + err.message);
-    })
-    .save(tempLocalVideoPath);
+    const deleteLocalVideoResponse = await deleteLocalVideo(videoId);
+    console.log({ ...deleteLocalVideoResponse });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 app.get("/crop-and-upload", async (c) => {
   // cropAndUpload("clvqv8rb50000baqobltklw28");
-  cropAndUpload("clvqukcoa0004xb06epbjzg7w");
+  await cropAndUpload("clvqrfd9l000c11qackrj6ovi");
 
   return c.json({ message: "Hello World!" });
 });
