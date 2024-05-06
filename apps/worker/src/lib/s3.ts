@@ -23,7 +23,5 @@ export async function getUploadUrl(videoId: string) {
     Key: `videos/${videoId}/video.webm`,
   });
 
-  const uploadUrl = await getSignedUrl(client, command, { expiresIn: 3600 });
-
-  return uploadUrl;
+  return getSignedUrl(client, command, { expiresIn: 3600 });
 }
