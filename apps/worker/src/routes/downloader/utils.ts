@@ -3,8 +3,10 @@ import fs from "fs";
 
 import { getS3DirectoryUrl } from "../../lib/s3";
 
+const MIME_TYPE = "mp4";
+
 function getLocalVideoPath(videoId: string) {
-  return `./temp/${videoId}.mp4`;
+  return `./temp/${videoId}.${MIME_TYPE}`;
 }
 
 export async function cropVideo(videoId: string) {
@@ -32,9 +34,9 @@ export async function readLocalVideo(videoId: string) {
   return new Promise<File>((resolve, reject) => {
     fs.readFile(getLocalVideoPath(videoId), async (error, data) => {
       if (!error) {
-        const blob = new Blob([data], { type: "video/mp4" });
+        const blob = new Blob([data], { type: MIME_TYPE });
 
-        resolve(new File([blob], videoId, { type: "video/mp4" }));
+        resolve(new File([blob], videoId, { type: MIME_TYPE }));
       } else {
         console.log(error);
 
