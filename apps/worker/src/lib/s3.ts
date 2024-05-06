@@ -5,12 +5,6 @@ const S3_BASE =
   process.env.S3_BASE ||
   "https://videphrasefind.s3.eu-north-1.amazonaws.com/videos";
 
-// https://videphrasefind.s3.eu-north-1.amazonaws.com/videos/clvqv8rb50000baqobltklw28/video.webm
-// https://videphrasefind.s3.eu-north-1.amazonaws.com/videos/clvqv8rb50000baqobltklw28/video.cropped.webm
-
-// https://videphrasefind.s3.eu-north-1.amazonaws.com/videos/clvqukcoa0004xb06epbjzg7w/video.webm
-// https://videphrasefind.s3.eu-north-1.amazonaws.com/videos/clvqukcoa0004xb06epbjzg7w/video.cropped.webm
-
 export function getS3DirectoryUrl(videoId: string) {
   return `${S3_BASE}/${videoId}`;
 }
