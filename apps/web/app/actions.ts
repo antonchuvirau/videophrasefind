@@ -26,7 +26,7 @@ export async function getUploadUrl(videoId: string) {
   return await getSignedUrl(client, command, { expiresIn: 3600 }); // uploadUrl = getSignedUrl(client, command, { expiresIn: 3600 });
 }
 
-export async function trigger(videoId: string) {
+export async function triggerTranscription(videoId: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/trigger`,
     {
@@ -46,7 +46,7 @@ export async function trigger(videoId: string) {
     .parse(await res.json());
 }
 
-export async function fetchAndTrigger(ytUrl: string, videoId: string) {
+export async function fetchYTVideoAndTriggerTranscription(ytUrl: string, videoId: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/fetch-and-trigger`,
     {

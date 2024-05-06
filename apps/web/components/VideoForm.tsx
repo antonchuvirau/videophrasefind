@@ -13,7 +13,11 @@ import Button from "@/components/Button";
 import Input from "@/components/Input";
 import { Icons } from "@/components/Icons";
 
-import { fetchAndTrigger, getUploadUrl, trigger } from "@/app/actions";
+import {
+  fetchYTVideoAndTriggerTranscription,
+  getUploadUrl,
+  triggerTranscription,
+} from "@/app/actions";
 import { createVideo, saveVideoTitle } from "@/app/video-actions";
 
 export const schema = z.object({
@@ -63,7 +67,7 @@ export default function VideoForm() {
       setStatus("Triggering video upload to our storage...");
     },
     mutationFn: ({ ytUrl, videoId }: { ytUrl: string; videoId: string }) =>
-      fetchAndTrigger(ytUrl, videoId), // Video transcription on 12Labs will be triggered automatically
+      fetchYTVideoAndTriggerTranscription(ytUrl, videoId), // Video transcription on 12Labs will be triggered automatically
   });
 
   const localUploadMutation = useMutation({
@@ -78,7 +82,7 @@ export default function VideoForm() {
 
       await saveVideoTitle({ videoTitle: file.name.split(".")[0], videoId });
 
-      return trigger(videoId); // Trigger video transcription on 12Labs manually
+      return triggerTranscription(videoId); // Trigger video transcription on 12Labs manually
     },
   });
 
