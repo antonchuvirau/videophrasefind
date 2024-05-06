@@ -17,7 +17,6 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
     engines: engine,
     addons: ["thumbnail"],
   });
-
   console.log({ index });
 
   await db.video.update({
@@ -47,8 +46,5 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
     indexId: index.id,
     url: `${getS3DirectoryUrl(videoId)}/video.webm`,
   });
-
   console.log({ task });
-
-  return task;
 }
