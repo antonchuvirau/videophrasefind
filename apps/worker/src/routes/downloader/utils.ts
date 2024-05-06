@@ -5,6 +5,8 @@ import { getS3DirectoryUrl } from "../../lib/s3";
 
 const MIME_TYPE = "mp4";
 
+export const MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE = 60 * 2;
+
 function getLocalVideoPath(videoId: string) {
   return `./temp/${videoId}.${MIME_TYPE}`;
 }
@@ -14,7 +16,9 @@ export async function cropVideo(videoId: string) {
     ffmpeg()
       .input(`${getS3DirectoryUrl(videoId)}/video.webm`)
       .setStartTime("00:00:00")
-      .setDuration("00:01:00")
+      .setDuration(
+        `00:${`${MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE / 60}`.padStart(2, "0")}:00`
+      )
       .on("start", (cmd) => {
         console.log("Spawned ffmpeg command: " + cmd);
       })

@@ -5,7 +5,7 @@ import { engine } from "../../twelveLabs/engines";
 
 import { getS3DirectoryUrl } from "../../lib/s3";
 
-// const MAX_ALLOWED_SECONDS = 300;
+// import { MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE } from "./utils";
 
 export async function trigger12LabsTask({ videoId }: { videoId: string }) {
   console.log(`Triggering 12Labs task for: ${{ videoId }}`);
@@ -13,7 +13,7 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
   // const duration = await getVideoDurationInSeconds(`${getS3DirectoryUrl(videoId)}/video.webm`)
 
   const index = await client12Labs.index.create({
-    name: videoId, // = `${duration > MAX_ALLOWED_SECONDS ? "full" : "cropped"}.${videoId}`;
+    name: videoId, // = `${duration > MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE ? "cropped" : "full"}.${videoId}`;
     engines: engine,
     addons: ["thumbnail"],
   });
