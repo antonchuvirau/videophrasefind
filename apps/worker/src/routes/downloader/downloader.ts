@@ -4,9 +4,75 @@ import { db } from "database";
 
 import { trigger12LabsTask } from "./tasks";
 
-import { getS3DirectoryUrl, getUploadUrl } from "../../lib/s3";
+import {
+  getS3DirectoryUrl,
+  getCroppedUploadUrl,
+  getUploadUrl,
+} from "../../lib/s3";
+
+import ffmpeg from "fluent-ffmpeg";
+
+import fs from "fs";
 
 const app = new Hono();
+
+function deleteFile(file: string) {
+  return new Promise((resolve, reject) => {
+    fs.unlink(file, (err) => {
+      if (err) reject(err);
+      resolve(`Successfully deleted: ${file}`);
+    });
+  });
+}
+
+function cropAndUpload(videoId: string) {
+  const tempLocalVideoPath = `./temp/${videoId}.mp4`;
+
+  ffmpeg()
+    .input(`${getS3DirectoryUrl(videoId)}/video.webm`)
+    .setStartTime("00:00:00")
+    .setDuration("00:01:00")
+    .on("start", (cmd) => {
+      console.log("Spawned ffmpeg command: " + cmd);
+    })
+    .on("end", () => {
+      console.log("Processing with ffmpeg finished!");
+
+      fs.readFile(tempLocalVideoPath, async (error, data) => {
+        if (!error) {
+          const blob = new Blob([data], { type: "video/mp4" });
+          const file = new File([blob], videoId, { type: "video/mp4" });
+
+          await fetch(await getCroppedUploadUrl(videoId), {
+            method: "PUT",
+            body: file,
+          });
+
+          console.log("Uploading to S3 finished");
+
+          try {
+            const response = await deleteFile(tempLocalVideoPath);
+            console.log(response);
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          console.log(error);
+        }
+      });
+    })
+    .on("error", (err) => {
+      console.log("An error occurred: " + err.message);
+    })
+    .save(tempLocalVideoPath);
+}
+
+app.get("/crop-and-upload", async (c) => {
+  // cropAndUpload("clvqv8rb50000baqobltklw28");
+  cropAndUpload("clvqukcoa0004xb06epbjzg7w");
+
+  return c.json({ message: "Hello World!" });
+});
 
 app.post("/trigger", async (c) => {
   const { videoId } = await c.req.json<{
