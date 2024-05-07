@@ -4,17 +4,9 @@ import { db } from "database";
 
 import { getS3DirectoryUrl, getUploadUrl } from "../../lib/s3";
 
-import { cropAndUpload } from "./utils";
 import { trigger12LabsTask } from "./tasks";
 
 const app = new Hono();
-
-app.get("/crop-and-upload", async (c) => {
-  // cropAndUpload("clvqv8rb50000baqobltklw28");
-  await cropAndUpload("clvqrfd9l000c11qackrj6ovi");
-
-  return c.json({ message: "Hello World!" });
-});
 
 app.post("/trigger", async (c) => {
   const { videoId } = await c.req.json<{
