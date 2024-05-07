@@ -77,17 +77,19 @@ export async function createVideo() {
   return video.id;
 }
 
-export async function saveVideoTitle({
-  videoTitle,
-  videoId,
+export async function saveVideoTitleAndSize({
+  id,
+  title,
+  size,
 }: {
-  videoTitle: string;
-  videoId: string;
+  id: string;
+  title: string;
+  size: number;
 }) {
   const video = await db.video.update({
-    where: { id: videoId },
-    data: { title: videoTitle },
+    where: { id },
+    data: { title, size },
   });
 
-  return video.title;
+  return { title: video.title, size: video.size };
 }

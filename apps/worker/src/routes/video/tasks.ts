@@ -1,7 +1,5 @@
 import { db } from "database";
 
-import { client12Labs } from "../../twelveLabs/client";
-
 import {
   get12LabsVideoId,
   get12LabsIndexId,
@@ -63,20 +61,20 @@ export const triggerSaveMetadataTask = async ({
     },
   });
 
-  const {
-    metadata: { duration, size },
-  } = await client12Labs.index.video.retrieve(
-    twelveLabsIndexId,
-    twelveLabsVideoId
-  );
+  // const {
+  //   metadata: { duration, size },
+  // } = await client12Labs.index.video.retrieve(
+  //   twelveLabsIndexId,
+  //   twelveLabsVideoId
+  // );
 
-  await db.video.update({
-    where: { id: videoId },
-    data: {
-      duration,
-      size,
-    },
-  });
+  // await db.video.update({
+  //   where: { id: videoId },
+  //   data: {
+  //     duration,
+  //     size,
+  //   },
+  // });
 
   let hls = await getHLS({ twelveLabsIndexId, twelveLabsVideoId });
 

@@ -19,6 +19,15 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
   );
   console.log({ duration });
 
+  await db.video.update({
+    where: {
+      id: videoId,
+    },
+    data: {
+      duration,
+    },
+  });
+
   const index = await client12Labs.index.create({
     name: `${duration > MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE ? "cropped" : "full"}.${videoId}`,
     engines: engine,

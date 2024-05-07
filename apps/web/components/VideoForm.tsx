@@ -18,7 +18,7 @@ import {
   getUploadUrl,
   triggerTranscription,
 } from "@/app/actions";
-import { createVideo, saveVideoTitle } from "@/app/video-actions";
+import { createVideo, saveVideoTitleAndSize } from "@/app/video-actions";
 
 export const schema = z.object({
   ytUrl: z
@@ -80,7 +80,11 @@ export default function VideoForm() {
         body: file,
       });
 
-      await saveVideoTitle({ videoTitle: file.name.split(".")[0], videoId });
+      await saveVideoTitleAndSize({
+        id: videoId,
+        title: file.name.split(".")[0],
+        size: file.size,
+      });
 
       return triggerTranscription(videoId); // Trigger video transcription on 12Labs manually
     },
