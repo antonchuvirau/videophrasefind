@@ -6,7 +6,7 @@ import { engine } from "../../twelveLabs/engines";
 
 import { getS3DirectoryUrl } from "../../lib/s3";
 
-// import { MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE } from "./utils";
+// import { MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE } from "./utils";
 
 export async function trigger12LabsTask({ videoId }: { videoId: string }) {
   console.log(`Triggering 12Labs task for: ${{ videoId }}`);
@@ -16,7 +16,7 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
   // );
 
   const index = await client12Labs.index.create({
-    name: videoId, // = `${duration > MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE ? "cropped" : "full"}.${videoId}`;
+    name: videoId, // = `${duration > MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE ? "cropped" : "full"}.${videoId}`;
     engines: engine,
     addons: ["thumbnail"],
   });
@@ -31,7 +31,7 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
     },
   });
 
-  // if (duration > MAX_SECONDS_ALLOWED_TO_TRANCRIBE_FOR_FREE) {
+  // if (duration > MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE) {
   //   await cropAndUpload(videoId);
 
   //   await client12Labs.task.create({
