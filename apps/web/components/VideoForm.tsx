@@ -72,7 +72,9 @@ export default function VideoForm() {
 
   const localUploadMutation = useMutation({
     onMutate: () => {
-      setStatus("Uploading your video to our storage...");
+      setStatus(
+        "Uploading your video to our storage\nPlease, don't leave the page...",
+      );
     },
     mutationFn: async ({ file, videoId }: { file: File; videoId: string }) => {
       await fetch(await getUploadUrl(videoId), {
@@ -102,7 +104,7 @@ export default function VideoForm() {
         <Icons.spinner className="size-20 animate-spin text-[#9DA3AE]" />
         <div className="text-center">
           <h2 className="mb-4 text-lg font-bold">Video processing...</h2>
-          <p className="text-md animate-slide text-center text-[#9DA3AE]">
+          <p className="text-md animate-slide whitespace-pre-wrap text-center text-[#9DA3AE]">
             {status}
           </p>
         </div>
