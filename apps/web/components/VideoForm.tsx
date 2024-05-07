@@ -73,7 +73,7 @@ export default function VideoForm() {
   const localUploadMutation = useMutation({
     onMutate: () => {
       setStatus(
-        "Uploading your video to our storage\nPlease, don't leave the page...",
+        "Uploading your video to our storage...\nPlease, don't leave the page",
       );
     },
     mutationFn: async ({ file, videoId }: { file: File; videoId: string }) => {

@@ -30,7 +30,7 @@ export const triggerUpdateVideoProcessingStatusTask = async ({
     await new Promise((resolve) => setTimeout(resolve, 5000));
   }
 
-  await db.video.update({ where: { id: videoId }, data: { status: "READY" } });
+  await db.videoMetadata.update({ where: { id: videoId }, data: { status: "READY" } });
 };
 
 export const triggerSaveMetadataTask = async ({
@@ -60,7 +60,7 @@ export const triggerSaveMetadataTask = async ({
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
-  await db.video.update({
+  await db.videoMetadata.update({
     where: { id: videoId },
     data: {
       twelveLabsVideoId,
@@ -74,7 +74,7 @@ export const triggerSaveMetadataTask = async ({
   //   twelveLabsVideoId
   // );
 
-  // await db.video.update({
+  // await db.videoMetadata.update({
   //   where: { id: videoId },
   //   data: {
   //     duration,
@@ -90,7 +90,7 @@ export const triggerSaveMetadataTask = async ({
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
-  await db.video.update({
+  await db.videoMetadata.update({
     where: { id: videoId },
     data: {
       thumbnailUrl: hls.thumbnailUrls?.[0],

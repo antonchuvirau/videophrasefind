@@ -70,7 +70,7 @@ export async function fetchYTVideoAndTriggerTranscription(
 }
 
 export async function getSemanticSearchResult(videoId: string, query: string) {
-  const video = await db.video.findUnique({
+  const video = await db.videoMetadata.findUnique({
     where: {
       id: videoId,
     },

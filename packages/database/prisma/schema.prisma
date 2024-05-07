@@ -13,17 +13,17 @@ enum Status {
   READY
 }
 
-model Video {
+model VideoMetadata {
   id String @id @default(cuid())
 
   title        String?
   duration     Decimal?
   size         Int?
   thumbnailUrl String?
-  status       Status   @default(PROCESSING)
 
   userId String?
 
+  status            Status  @default(PROCESSING)
   twelveLabsVideoId String?
   twelveLabsIndexId String?
 

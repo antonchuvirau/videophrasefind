@@ -4,7 +4,7 @@ import { client12Labs } from "../../twelveLabs/client";
 
 export const get12LabsIndexId = async (videoId: string) => {
   return (
-    await db.video.findUnique({
+    await db.videoMetadata.findUnique({
       where: { id: videoId },
     })
   )?.twelveLabsIndexId;

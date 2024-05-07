@@ -19,7 +19,7 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
   );
   console.log({ duration });
 
-  await db.video.update({
+  await db.videoMetadata.update({
     where: {
       id: videoId,
     },
@@ -35,7 +35,7 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
   });
   console.log({ index });
 
-  await db.video.update({
+  await db.videoMetadata.update({
     where: {
       id: videoId,
     },

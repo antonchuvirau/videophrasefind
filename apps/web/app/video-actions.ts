@@ -18,7 +18,7 @@ export async function getVideoUrl(videoId: string) {
 }
 
 export async function getVideoProcessingStatus(videoId: string) {
-  const data = await db.video.findUnique({
+  const data = await db.videoMetadata.findUnique({
     where: { id: videoId },
     select: { status: true },
   });
@@ -27,7 +27,7 @@ export async function getVideoProcessingStatus(videoId: string) {
 }
 
 export async function getVideo12LabsIds(videoId: string) {
-  const data = await db.video.findUnique({
+  const data = await db.videoMetadata.findUnique({
     where: { id: videoId },
     select: { twelveLabsVideoId: true, twelveLabsIndexId: true },
   });
@@ -38,7 +38,7 @@ export async function getVideo12LabsIds(videoId: string) {
 export async function createVideo() {
   const { userId } = auth();
 
-  const video = await db.video.create({
+  const video = await db.videoMetadata.create({
     data: {
       userId,
     },
@@ -86,7 +86,7 @@ export async function saveVideoTitleAndSize({
   title: string;
   size: number;
 }) {
-  const video = await db.video.update({
+  const video = await db.videoMetadata.update({
     where: { id },
     data: { title, size },
   });

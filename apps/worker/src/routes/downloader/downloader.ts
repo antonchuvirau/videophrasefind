@@ -25,7 +25,7 @@ app.post("/fetch-and-trigger", async (c) => {
 
   const info = await ytdl.getInfo(url);
 
-  await db.video.update({
+  await db.videoMetadata.update({
     where: {
       id: videoId,
     },
@@ -59,7 +59,7 @@ app.post("/fetch-and-trigger", async (c) => {
     const blob = new Blob(chunks, { type: mimeType });
     const file = new File([blob], filename, { type: mimeType });
 
-    await db.video.update({
+    await db.videoMetadata.update({
       where: {
         id: videoId,
       },
