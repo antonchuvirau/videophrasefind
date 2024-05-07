@@ -11,7 +11,7 @@ function getLocalVideoPath(videoId: string) {
   return `./temp/${videoId}.${MIME_TYPE}`;
 }
 
-export async function cropAndUpload(videoId: string) {
+export async function cropAndUploadToS3(videoId: string) {
   try {
     const cropVideoResponse = await cropVideo(videoId);
     console.log({ ...cropVideoResponse });

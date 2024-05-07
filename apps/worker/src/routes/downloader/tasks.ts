@@ -8,7 +8,7 @@ import { getS3DirectoryUrl } from "../../lib/s3";
 
 import {
   MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE,
-  cropAndUpload,
+  cropAndUploadToS3,
 } from "./utils";
 
 export async function trigger12LabsTask({ videoId }: { videoId: string }) {
@@ -45,7 +45,7 @@ export async function trigger12LabsTask({ videoId }: { videoId: string }) {
   });
 
   if (duration > MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE) {
-    await cropAndUpload(videoId);
+    await cropAndUploadToS3(videoId);
 
     await client12Labs.task.create({
       indexId: index.id,
