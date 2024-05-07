@@ -16,7 +16,9 @@ export const triggerUpdateVideoProcessingStatusTask = async ({
 
   while (!twelveLabsIndexId) {
     twelveLabsIndexId = await get12LabsIndexId(videoId);
-    console.log("waiting for index ready...", { twelveLabsIndexId });
+    console.log("(status update task) waiting for index ready...", {
+      twelveLabsIndexId,
+    });
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
@@ -42,7 +44,9 @@ export const triggerSaveMetadataTask = async ({
 
   while (!twelveLabsIndexId) {
     twelveLabsIndexId = await get12LabsIndexId(videoId);
-    console.log("waiting for index ready...", { twelveLabsIndexId });
+    console.log("(save MD task) 2 waiting for index ready...", {
+      twelveLabsIndexId,
+    });
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
@@ -50,7 +54,9 @@ export const triggerSaveMetadataTask = async ({
 
   while (!twelveLabsVideoId) {
     twelveLabsVideoId = await get12LabsVideoId(twelveLabsIndexId);
-    console.log("waiting for videoId ready...", { twelveLabsVideoId });
+    console.log("(save MD task) waiting for videoId ready...", {
+      twelveLabsVideoId,
+    });
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
