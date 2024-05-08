@@ -39,6 +39,7 @@ export default function VideoForm() {
 
   const {
     register,
+    watch,
     handleSubmit,
     formState: { errors, isValid, isSubmitting, isDirty },
   } = useZodForm({
@@ -49,18 +50,13 @@ export default function VideoForm() {
     mode: "onBlur",
   });
 
+  const ytUrl = watch("ytUrl");
+
   const files = acceptedFiles.map((file: FileWithPath) => (
     <li key={file.path}>
       {file.path} - {file.size} bytes
     </li>
   ));
-
-  const createVideoMutation = useMutation({
-    onMutate: () => {
-      setStatus("Triggering save video metadata jobs...");
-    },
-    mutationFn: () => createVideo(),
-  });
 
   const externalUploadMutation = useMutation({
     onMutate: () => {
@@ -92,6 +88,29 @@ export default function VideoForm() {
     },
   });
 
+  const createVideoMutation = useMutation({
+    onMutate: () => {
+      setStatus("Triggering save video metadata jobs...");
+    },
+    mutationFn: createVideo,
+    onSuccess: async (videoId) => {
+      const { message } = ytUrl
+        ? await externalUploadMutation.mutateAsync({
+            ytUrl,
+            videoId,
+          })
+        : await localUploadMutation.mutateAsync({
+            file: acceptedFiles[0],
+            videoId,
+          });
+      console.log({ message });
+
+      startTransition(() => {
+        router.push(`/video/${videoId}`);
+      });
+    },
+  });
+
   if (
     isSubmitting ||
     isPending ||
@@ -113,31 +132,8 @@ export default function VideoForm() {
 
   return (
     <form
-      onSubmit={handleSubmit(({ ytUrl }) => {
-        createVideoMutation.mutate(undefined, {
-          onSuccess: async (videoId) => {
-            if (ytUrl) {
-              const { message } = await externalUploadMutation.mutateAsync({
-                ytUrl,
-                videoId,
-              });
-              console.log({ message });
-            } else {
-              const { message } = await localUploadMutation.mutateAsync({
-                file: acceptedFiles[0],
-                videoId,
-              });
-              console.log({ message });
-            }
-            /*
-              If I do redirect on the server side,
-              redirect time is not included in the mutation isPending time
-            */
-            startTransition(() => {
-              router.push(`/video/${videoId}`);
-            });
-          },
-        });
+      onSubmit={handleSubmit(() => {
+        createVideoMutation.mutate();
       })}
       className="flex w-full flex-col items-center gap-8 rounded-[32px] bg-[#0B111A] p-4 min-[1050px]:max-w-[512px]"
     >
