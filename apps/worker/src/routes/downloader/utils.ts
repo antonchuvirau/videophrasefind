@@ -8,7 +8,7 @@ const MIME_TYPE = "mp4";
 export const MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE = 60.0;
 
 function getLocalVideoPath(videoId: string) {
-  return `./temp/${videoId}.${MIME_TYPE}`;
+  return `/tmp/${videoId}.${MIME_TYPE}`;
 }
 
 export async function cropAndUploadToS3(videoId: string) {
