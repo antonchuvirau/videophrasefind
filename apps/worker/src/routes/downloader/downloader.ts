@@ -35,6 +35,7 @@ app.post("/fetch-and-trigger", async (c) => {
   });
 
   const format = ytdl.chooseFormat(info.formats, {
+    quality: "lowestvideo",
     // quality: "22", // iTag value: resolution=720p, container=mp4, ...
     filter: "audioandvideo", // include audio, not only video
   });
