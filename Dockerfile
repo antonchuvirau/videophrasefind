@@ -17,9 +17,9 @@ RUN pnpm --filter worker install
 RUN pnpm --filter worker build
 
 FROM base
-WORKDIR apps/worker
 COPY --from=build . .
 ENV PORT 5173
 EXPOSE 5173
+WORKDIR apps/worker
 CMD ["npm", "start"]
 
