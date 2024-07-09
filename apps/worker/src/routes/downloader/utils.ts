@@ -33,22 +33,26 @@ export async function cropAndUploadToS3(videoId: string) {
 }
 
 async function cropVideo(videoId: string) {
+  const timeLabel = `cropVideo:${videoId}`;
   return new Promise<{ message: string }>((resolve, reject) => {
     ffmpeg()
       .input(`${getS3DirectoryUrl(videoId)}/video.webm`)
       .setStartTime("00:00:00")
       .setDuration(
-        `00:${`${MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE / 60}`.padStart(2, "0")}:00`
+        `00:${`${MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE / 60}`.padStart(2, "0")}:00`,
       )
+      .addOptions("-c copy")
       .on("start", (cmd) => {
+        console.time(timeLabel);
         console.log("Spawned ffmpeg command: " + cmd);
       })
       .on("end", () => {
+        console.timeEnd(timeLabel);
         resolve({ message: "Processing with ffmpeg finished!" });
       })
       .on("error", (error) => {
+        console.timeEnd(timeLabel);
         console.log(error);
-
         reject(error);
       })
       .save(getLocalVideoPath(videoId));
