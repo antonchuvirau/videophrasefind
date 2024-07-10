@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1.7-labs
 FROM node:20-alpine AS base
-RUN apk add ffmpeg
+RUN apk add ffmpeg yt-dlp
 WORKDIR /app
 RUN corepack enable pnpm
 

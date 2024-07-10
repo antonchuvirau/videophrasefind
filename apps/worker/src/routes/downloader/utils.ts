@@ -5,7 +5,8 @@ import { getUploadUrl, getS3DirectoryUrl } from "../../lib/s3";
 
 const MIME_TYPE = "mp4";
 
-export const MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE = 60.0;
+export const MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE =
+  Number(process.env.MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE) || 60;
 
 function getLocalVideoPath(videoId: string) {
   return `/tmp/${videoId}.${MIME_TYPE}`;
