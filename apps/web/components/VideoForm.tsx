@@ -22,11 +22,19 @@ import {
 import { createVideo, saveVideoTitleAndSize } from "@/app/video-actions";
 
 export const schema = z.object({
-  ytUrl: z
-    .string()
-    .url({ message: "Invalid URL" })
-    .transform((s) => s.replaceAll(/&.*$/g, "")) // Cleanup youtube links
-    .or(z.literal("")),
+  ytUrl: z.union([
+    z
+      .string()
+      .includes("youtube.com", { message: "It's not a YouTube URL!" })
+      .url({ message: "Invalid URL!" })
+      .transform((s) => s.replaceAll(/&.*$/g, "")),
+    z
+      .string()
+      .includes("youtu.be", { message: "It's not a YouTube URL!" })
+      .url({ message: "Invalid URL!" })
+      .transform((s) => s.replaceAll(/&.*$/g, "")),
+    z.literal(""),
+  ]),
 });
 
 export default function VideoForm() {
@@ -175,7 +183,7 @@ export default function VideoForm() {
       </div>
       <Input
         className="w-full"
-        placeholder="Paste video URL"
+        placeholder="Paste YouTube video URL"
         name="ytUrl"
         register={register}
         errors={errors}
