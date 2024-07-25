@@ -5,7 +5,8 @@ import { getUploadUrl, getS3DirectoryUrl } from "../../lib/s3";
 
 const MIME_TYPE = "mp4";
 
-export const MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE = 60.0;
+export const MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE =
+  Number(process.env.MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE) || 60;
 
 function getLocalVideoPath(videoId: string) {
   return `/tmp/${videoId}.${MIME_TYPE}`;
@@ -33,22 +34,26 @@ export async function cropAndUploadToS3(videoId: string) {
 }
 
 async function cropVideo(videoId: string) {
+  const timeLabel = `cropVideo:${videoId}`;
   return new Promise<{ message: string }>((resolve, reject) => {
     ffmpeg()
       .input(`${getS3DirectoryUrl(videoId)}/video.webm`)
       .setStartTime("00:00:00")
       .setDuration(
-        `00:${`${MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE / 60}`.padStart(2, "0")}:00`
+        `00:${`${MAX_SECONDS_ALLOWED_TO_TRANSCRIBE_FOR_FREE / 60}`.padStart(2, "0")}:00`,
       )
+      .addOptions("-c copy")
       .on("start", (cmd) => {
+        console.time(timeLabel);
         console.log("Spawned ffmpeg command: " + cmd);
       })
       .on("end", () => {
+        console.timeEnd(timeLabel);
         resolve({ message: "Processing with ffmpeg finished!" });
       })
       .on("error", (error) => {
+        console.timeEnd(timeLabel);
         console.log(error);
-
         reject(error);
       })
       .save(getLocalVideoPath(videoId));

@@ -1,21 +1,18 @@
+#syntax=docker/dockerfile:1.7-labs
 FROM node:20-alpine AS base
-
-RUN apk add ffmpeg
+RUN apk add ffmpeg yt-dlp
+WORKDIR /app
 RUN corepack enable pnpm
 
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .
-# TODO: copy **/package.json first before installing
-# https://github.com/moby/moby/issues/35639
-COPY . .
-# For some reason simple pnpm install fails to create node_modules
-# https://github.com/pnpm/pnpm/issues/4321#issuecomment-1978703086
-RUN pnpm add turbo -w
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc .
+COPY --parents apps/worker/package.json .
+COPY --parents packages/database/package.json .
+RUN pnpm install
 
-RUN pnpm run build --filter worker
-
+COPY --parents apps/worker .
+COPY --parents packages/database .
+RUN pnpm build
 ENV PORT 5173
 EXPOSE 5173
-
-WORKDIR apps/worker
-CMD ["npm", "start"]
+CMD ["pnpm", "--filter", "worker", "start"]
 
