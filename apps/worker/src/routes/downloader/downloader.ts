@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import YTDlpWrap from "yt-dlp-wrap";
 import { db } from "database";
 
-const ytDlpWrap = new YTDlpWrap("/usr/bin/yt-dlp");
+const ytDlpWrap = new YTDlpWrap(process.env.YT_DLP_PATH || "/usr/bin/yt-dlp");
 
 import { getS3DirectoryUrl, streamToS3 } from "../../lib/s3";
 
