@@ -24,7 +24,7 @@ async function getVideoAndAudioStreamITags(url: string) {
   const filteredRows = metadata
     .split("\n")
     .filter((s) =>
-      s.match("((https.*720p|https.*480p)|(audio only.*medium.*))")
+      s.match(/((https.*720p|https.*480p)|(audio only.*medium.*))/)
     );
 
   console.log(filteredRows);
