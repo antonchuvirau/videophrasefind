@@ -40,7 +40,7 @@ export function streamToS3(videoId: string, videoSize: "full" | "cropped") {
 
 export async function getUploadUrl(
   videoId: string,
-  videoSize: "full" | "cropped",
+  videoSize: "full" | "cropped"
 ) {
   const command = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET || "",
