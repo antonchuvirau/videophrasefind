@@ -18,7 +18,7 @@ app.post("/trigger", async (c) => {
   return c.json({ message: "TwelveLabs video upload job triggered!" });
 });
 
-async function getVideoAndAudioStreamIds(url: string) {
+async function getVideoAndAudioStreamITags(url: string) {
   const metadata = await ytDlpWrap.execPromise(["-F", url]);
 
   const filteredRows = metadata
@@ -62,7 +62,7 @@ app.post("/fetch-and-trigger", async (c) => {
     },
   });
 
-  const ids = await getVideoAndAudioStreamIds(url);
+  const ids = await getVideoAndAudioStreamITags(url);
 
   const audioStream = ids.findLast((el) => el.type === "audio");
   const videoStream = ids.find((el) => el.type === "video");
