@@ -18,29 +18,23 @@ app.post("/trigger", async (c) => {
   return c.json({ message: "TwelveLabs video upload job triggered!" });
 });
 
-async function getVideoAndAudioStreamITags(url: string) {
-  const metadata = await ytDlpWrap.execPromise(["-F", url]);
+async function getVideoAndAudioStreamID(url: string) {
+  const formats = await ytDlpWrap.execPromise(["-F", url]);
 
-  const filteredRows = metadata
+  const filteredFormats = formats
     .split("\n")
     .filter((s) =>
       s.match(/((https.*720p|https.*480p)|(audio only.*medium.*))/)
     );
+  console.log(filteredFormats);
 
-  console.log(filteredRows);
-
-  const ids = filteredRows.map((s) => {
-    const isAudio = s.includes("audio only");
-
-    return {
-      type: isAudio ? "audio" : "video",
-      id: s.split(" ")[0],
-    };
-  });
-
-  console.log(ids);
-
-  return ids;
+  return filteredFormats.map(
+    (s) =>
+      ({
+        type: s.includes("audio only") ? "audio" : "video",
+        id: s.split(" ")[0],
+      }) as const
+  );
 }
 
 app.post("/fetch-and-trigger", async (c) => {
@@ -62,7 +56,8 @@ app.post("/fetch-and-trigger", async (c) => {
     },
   });
 
-  const ids = await getVideoAndAudioStreamITags(url);
+  const ids = await getVideoAndAudioStreamID(url);
+  console.log(ids);
 
   const audioStream = ids.findLast((el) => el.type === "audio");
   const videoStream = ids.find((el) => el.type === "video");
