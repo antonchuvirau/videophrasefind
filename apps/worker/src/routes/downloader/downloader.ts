@@ -70,6 +70,8 @@ app.post("/fetch-and-trigger", async (c) => {
     .execStream([
       "-f",
       `${audioStream?.id || "ba"}+${videoStream?.id || "bv"}`,
+      '--merge-output-format',
+      'mp4',
       url,
     ])
     .pipe(passThrough);
