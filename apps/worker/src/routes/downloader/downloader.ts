@@ -26,7 +26,7 @@ async function getVideoAndAudioStreamID(url: string) {
   const filteredFormats = formats
     .split("\n")
     .filter((s) =>
-      s.match(/((https.*720p|https.*480p)|(audio only.*medium.*))/),
+      s.match(/((https.*720p|https.*480p)|(audio only.*medium.*))/)
     );
   console.log(filteredFormats);
 
@@ -35,7 +35,7 @@ async function getVideoAndAudioStreamID(url: string) {
       ({
         type: s.includes("audio only") ? "audio" : "video",
         id: s.split(" ")[0],
-      }) as const,
+      }) as const
   );
 }
 
@@ -85,7 +85,7 @@ app.post("/fetch-and-trigger", async (c) => {
   ]);
 
   ytDlpStream.stderr.on("data", (data: Buffer) =>
-    console.warn(data.toString()),
+    console.warn(data.toString())
   );
 
   // MKV is not supported by browsers (and it's also a data stream that is missing headers and metadata),
