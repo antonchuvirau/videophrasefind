@@ -87,7 +87,7 @@ export async function getSemanticSearchResult(videoId: string, query: string) {
 
   const search = await client12Labs().search.query({
     indexId: data.twelveLabsVideos[0].twelveLabsIndexId,
-    query: query,
+    queryText: query,
     options: ["conversation"],
     conversationOption: "semantic",
   });
