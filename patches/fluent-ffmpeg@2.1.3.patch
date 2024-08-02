@@ -1,0 +1,13 @@
+diff --git a/lib/processor.js b/lib/processor.js
+index 36d980ad0cbf60cf55d2b2664460cad7b475584b..d1d865392a8586cace974cd358774cec03aaab43 100644
+--- a/lib/processor.js
++++ b/lib/processor.js
+@@ -488,7 +488,7 @@ module.exports = function(proto) {
+               setTimeout(function() {
+                 emitEnd(new Error('Output stream closed'));
+                 ffmpegProc.kill();
+-              }, 20);
++              }, 2000);
+             });
+ 
+             outputStream.target.on('error', function(err) {
