@@ -27,10 +27,19 @@ import {
 import { cn } from "@/lib/utils";
 import _ from "lodash";
 
-const leftTabs = ["/about", "/help", "/contact", "/pricing"] as const;
+const leftTabs = [
+  "/about",
+  "/help",
+  "/supported-sites",
+  "/contact",
+  "/pricing",
+] as const;
 
 const tabText = (tab: (typeof leftTabs)[number]) => {
-  return _.capitalize(tab.slice(1));
+  if (tab === "/supported-sites") return "Supported sites";
+  else {
+    return _.capitalize(tab.slice(1));
+  }
 };
 
 const Header = () => {
