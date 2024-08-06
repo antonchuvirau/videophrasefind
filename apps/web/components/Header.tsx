@@ -26,15 +26,10 @@ import {
 
 import { cn, capitalize } from "@/lib/utils";
 
-const leftTabs = ["/", "/about", "/help", "/contact", "/pricing"] as const;
+const leftTabs = ["/about", "/help", "/contact", "/pricing"] as const;
 
 const tabText = (tab: (typeof leftTabs)[number]) => {
-  switch (tab) {
-    case "/":
-      return "Home";
-    default:
-      return capitalize(tab.slice(1));
-  }
+  return capitalize(tab.slice(1));
 };
 
 const Header = () => {
