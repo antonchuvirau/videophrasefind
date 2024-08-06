@@ -25,12 +25,6 @@ export const schema = z.object({
   ytUrl: z.union([
     z
       .string()
-      .includes("youtube.com", { message: "It's not a YouTube URL!" })
-      .url({ message: "Invalid URL!" })
-      .transform((s) => s.replaceAll(/&.*$/g, "")),
-    z
-      .string()
-      .includes("youtu.be", { message: "It's not a YouTube URL!" })
       .url({ message: "Invalid URL!" })
       .transform((s) => s.replaceAll(/&.*$/g, "")),
     z.literal(""),
@@ -183,7 +177,7 @@ export default function VideoForm() {
       </div>
       <Input
         className="w-full"
-        placeholder="Paste YouTube video URL"
+        placeholder="Insert a link from a supported site"
         name="ytUrl"
         register={register}
         errors={errors}
