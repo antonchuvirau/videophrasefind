@@ -24,12 +24,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { cn, capitalize } from "@/lib/utils";
+import { cn } from "@/lib/utils";
+import _ from "lodash";
 
 const leftTabs = ["/about", "/help", "/contact", "/pricing"] as const;
 
 const tabText = (tab: (typeof leftTabs)[number]) => {
-  return capitalize(tab.slice(1));
+  return _.capitalize(tab.slice(1));
 };
 
 const Header = () => {
@@ -104,7 +105,7 @@ const Header = () => {
                           </Tooltip>
                         </TooltipProvider>
                       ) : null}
-                      <span>{`${membershipQuery.data.type ? capitalize(membershipQuery.data.type as string) : "Hobby"} ${membershipQuery.data.type !== null ? `(${capitalize(membershipQuery.data.status)})` : ""}`}</span>
+                      <span>{`${membershipQuery.data.type ? _.capitalize(membershipQuery.data.type as string) : "Hobby"} ${membershipQuery.data.type !== null ? `(${_.capitalize(membershipQuery.data.status)})` : ""}`}</span>
                     </span>
                   )}
                 </>
