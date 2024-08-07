@@ -39,11 +39,13 @@ async function getVideoAndAudioStreamID(url: string) {
   );
 }
 
-app.post("/fetch-and-trigger", async (c) => {
-  const { url, videoId } = await c.req.json<{
-    url: string;
-    videoId: string;
-  }>();
+export async function triggerBgJob({
+  url,
+  videoId,
+}: {
+  url: string;
+  videoId: string;
+}) {
   console.log("Fetching video", { url, videoId });
 
   const metadata = await ytDlpWrap.getVideoInfo([url, "-f", "mp4"]);
@@ -111,6 +113,15 @@ app.post("/fetch-and-trigger", async (c) => {
   });
 
   trigger12LabsTask({ videoId });
+}
+
+app.post("/fetch-and-trigger", async (c) => {
+  const { url, videoId } = await c.req.json<{
+    url: string;
+    videoId: string;
+  }>();
+
+  triggerBgJob({ url, videoId });
 
   return c.json({ message: "Fetch and trigger job triggered!" });
 });
