@@ -9,9 +9,11 @@ export async function triggerUpdateVideoProcessingTaskStatus({
 }) {
   let status = await getVideoProcessingStatus(twelveLabsIndexId);
 
-  while (status !== "ready") {
+  while (!["ready", "failed"].includes(status)) {
     status = await getVideoProcessingStatus(twelveLabsIndexId);
+
     console.log("waiting for video ready...", { status });
+
     await new Promise((resolve) => setTimeout(resolve, 7000));
   }
 
@@ -19,7 +21,7 @@ export async function triggerUpdateVideoProcessingTaskStatus({
     where: {
       twelveLabsIndexId,
     },
-    data: { status: "READY" },
+    data: { status: status === "ready" ? "READY" : "FAILED" },
   });
 }
 
@@ -36,9 +38,11 @@ export async function triggerSaveMetadataTask({
 
   while (!twelveLabsVideoId) {
     twelveLabsVideoId = await get12LabsVideoId(twelveLabsIndexId);
+
     console.log("(save MD task) waiting for twelveLabsVideoId ready...", {
       twelveLabsVideoId,
     });
+
     await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
@@ -53,7 +57,9 @@ export async function triggerSaveMetadataTask({
 
   while (!hls) {
     hls = await getHLS({ twelveLabsIndexId, twelveLabsVideoId });
+
     console.log("waiting for hls ready...", { hls });
+
     await new Promise((resolve) => setTimeout(resolve, 750));
   }
 
