@@ -98,18 +98,22 @@ export async function triggerBgJob({
 
   await upload.done();
 
-  // TODO: file size
-  // await db.videoMetadata.update({
-  //   where: {
-  //     id: videoId,
-  //   },
-  //   data: {
-  //     size: file.size,
-  //   },
-  // });
+  const downloadUrl = `${getS3DirectoryUrl(videoId)}/video.webm`;
 
   console.log("Upload done", {
-    downloadUrl: `${getS3DirectoryUrl(videoId)}/video.webm`,
+    downloadUrl,
+  });
+
+  const response = await fetch(downloadUrl, { method: "HEAD" });
+  const contentLengthBytes = response.headers.get("Content-Length");
+
+  await db.videoMetadata.update({
+    where: {
+      id: videoId,
+    },
+    data: {
+      size: contentLengthBytes ? +contentLengthBytes : undefined,
+    },
   });
 
   trigger12LabsTask({ videoId });
