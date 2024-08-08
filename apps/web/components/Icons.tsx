@@ -9,6 +9,7 @@ import {
   Coins,
   HandCoins,
   Check,
+  ServerCrash,
 } from "lucide-react";
 
 export const Icons = {
@@ -22,4 +23,5 @@ export const Icons = {
   credits: Coins,
   handCredits: HandCoins,
   check: Check,
+  errorProcessingVideo: ServerCrash,
 };
