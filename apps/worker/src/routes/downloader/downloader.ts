@@ -8,7 +8,7 @@ const ytDlpWrap = new YTDlpWrap(process.env.YT_DLP_PATH || "/usr/bin/yt-dlp");
 
 const app = new Hono();
 
-app.get("/validate-resource", async (c) => {
+app.post("/validate-resource", async (c) => {
   const { url } = await c.req.json<{
     url: string;
   }>();
