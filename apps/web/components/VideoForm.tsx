@@ -95,22 +95,24 @@ export default function VideoForm() {
     onMutate: () => {
       setStatus("Creating a video...");
     },
-    mutationFn: createVideo,
+    mutationFn: () => createVideo({ videoUrl: ytUrl }),
     onSuccess: async (videoId) => {
-      const { message } = ytUrl
-        ? await externalUploadMutation.mutateAsync({
-            ytUrl,
-            videoId,
-          })
-        : await localUploadMutation.mutateAsync({
-            file: acceptedFiles[0],
-            videoId,
-          });
-      console.log({ message });
+      if (videoId) {
+        const { message } = ytUrl
+          ? await externalUploadMutation.mutateAsync({
+              ytUrl,
+              videoId,
+            })
+          : await localUploadMutation.mutateAsync({
+              file: acceptedFiles[0],
+              videoId,
+            });
+        console.log({ message });
 
-      startTransition(() => {
-        router.push(`/video/${videoId}`);
-      });
+        startTransition(() => {
+          router.push(`/video/${videoId}`);
+        });
+      }
     },
   });
 
