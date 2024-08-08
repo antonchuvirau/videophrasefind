@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 
 import { trigger12LabsTask, triggerDownloadAndUploadToS3Task } from "./tasks";
 
@@ -26,13 +27,9 @@ app.post("/validate-resource", async (c) => {
   } catch (error) {
     console.error(error);
 
-    return c.json(
-      {
-        success: false,
-        message: "Resource is not supported",
-      },
-      400
-    );
+    throw new HTTPException(406, {
+      message: "Resource is not valid, check the supported resources list",
+    });
   }
 });
 

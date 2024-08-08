@@ -145,7 +145,8 @@ export default async function VideosPage() {
                     <Icons.ready className="size-5" />
                   </span>
                 ) : null}
-                {video.twelveLabsVideos[0]?.status === "PROCESSING" ? (
+                {!video.twelveLabsVideos[0]?.status ||
+                video.twelveLabsVideos[0]?.status === "PROCESSING" ? (
                   <span className="flex items-center gap-2 text-amber-300">
                     please wait, we&apos;re processing your video
                     <Icons.spinner className="size-5 animate-spin" />
