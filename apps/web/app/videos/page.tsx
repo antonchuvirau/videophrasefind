@@ -116,7 +116,7 @@ export default async function VideosPage() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger className="group">
-                              <span className="flex items-center gap-2 text-white/70  underline-offset-4 group-hover:underline">
+                              <span className="flex items-center gap-2 text-white/70 underline-offset-4 group-hover:underline">
                                 <Icons.handCredits
                                   strokeWidth={1.5}
                                   className="size-5"
@@ -139,17 +139,24 @@ export default async function VideosPage() {
               </div>
               <span className="flex gap-3 font-semibold">
                 {`Transcriptions`}:
-                {video.twelveLabsVideos[0]?.status !== "READY" ? (
-                  <span className="flex items-center gap-2 text-amber-300">
-                    please wait, we&apos;re processing your video
-                    <Icons.spinner className="size-5 animate-spin" />
-                  </span>
-                ) : (
+                {video.twelveLabsVideos[0]?.status === "READY" ? (
                   <span className="flex items-center gap-2 text-emerald-300">
                     ready
                     <Icons.ready className="size-5" />
                   </span>
-                )}
+                ) : null}
+                {video.twelveLabsVideos[0]?.status === "PROCESSING" ? (
+                  <span className="flex items-center gap-2 text-amber-300">
+                    please wait, we&apos;re processing your video
+                    <Icons.spinner className="size-5 animate-spin" />
+                  </span>
+                ) : null}
+                {video.twelveLabsVideos[0]?.status === "FAILED" ? (
+                  <span className="flex items-center gap-2 text-red-500">
+                    error processing the video
+                    <Icons.errorProcessingVideo className="size-5" />
+                  </span>
+                ) : null}
               </span>
             </div>
           </div>
