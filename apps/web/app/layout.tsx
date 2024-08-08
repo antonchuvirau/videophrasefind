@@ -9,6 +9,7 @@ import ClerkProvider from "@/components/providers/clerkProvider";
 import QueryProvider from "@/components/providers/queryProvider";
 
 import "@/styles/globals.css";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,6 +48,7 @@ export default function RootLayout({
               {children}
             </main>
             <Footer />
+            <Toaster />
           </QueryProvider>
         </body>
       </ClerkProvider>
