@@ -116,8 +116,8 @@ importers:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@3.4.4)
       twelvelabs-js:
-        specifier: ^0.2.3
-        version: 0.2.3
+        specifier: ^0.2.5
+        version: 0.2.5
       use-debounce:
         specifier: ^10.0.1
         version: 10.0.1(react@18.3.1)
@@ -207,8 +207,8 @@ importers:
         specifier: ^4.4.12
         version: 4.4.12
       twelvelabs-js:
-        specifier: ^0.2.3
-        version: 0.2.3
+        specifier: ^0.2.5
+        version: 0.2.5
       uuid:
         specifier: ^10.0.0
         version: 10.0.0
@@ -3292,8 +3292,8 @@ packages:
     resolution: {integrity: sha512-/Ftmxd5Mq//a9yMonvmwENNUN65jOVTwhhBPQjEtNZutYT9YKyzydFGLyVM1nzhpLWahQSMamRc/RDBv5EapzA==}
     hasBin: true
 
-  twelvelabs-js@0.2.3:
-    resolution: {integrity: sha512-mWI1s7HPhZlxkhH6CBuyULfLdnfUSJA0j8ZIzQzTro8yGacNDc1Lm0kMIuDmuuyOvY726W/PAkxYdnxDQEIvHw==}
+  twelvelabs-js@0.2.5:
+    resolution: {integrity: sha512-ESkiq5gWxyoiezKkiliGwkw5ATItlgR4YIhnnkemPDoK4ilJEPgHTDZXH9pU5/THenR3YizbpI8WVugV0sv9yQ==}
 
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
@@ -7320,7 +7320,7 @@ snapshots:
       turbo-windows-64: 2.0.6
       turbo-windows-arm64: 2.0.6
 
-  twelvelabs-js@0.2.3:
+  twelvelabs-js@0.2.5:
     dependencies:
       cross-fetch: 4.0.0
       form-data: 4.0.0
