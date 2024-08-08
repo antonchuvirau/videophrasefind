@@ -26,6 +26,7 @@ model VideoMetadata {
 enum Status {
   PROCESSING
   READY
+  FAILED
 }
 
 model TwelveLabsVideo {
