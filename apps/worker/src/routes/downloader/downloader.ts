@@ -2,7 +2,39 @@ import { Hono } from "hono";
 
 import { trigger12LabsTask, triggerDownloadAndUploadToS3Task } from "./tasks";
 
+import YTDlpWrap from "yt-dlp-wrap";
+
+const ytDlpWrap = new YTDlpWrap(process.env.YT_DLP_PATH || "/usr/bin/yt-dlp");
+
 const app = new Hono();
+
+app.get("/validate-resource", async (c) => {
+  const { url } = await c.req.json<{
+    url: string;
+  }>();
+
+  try {
+    await ytDlpWrap.execPromise([url, "-s"]);
+
+    return c.json(
+      {
+        success: true,
+        message: "Able to download",
+      },
+      200
+    );
+  } catch (error) {
+    console.error(error);
+
+    return c.json(
+      {
+        success: false,
+        message: "Resource is not supported",
+      },
+      400
+    );
+  }
+});
 
 app.post("/trigger", async (c) => {
   const { videoId } = await c.req.json<{
