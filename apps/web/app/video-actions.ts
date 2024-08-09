@@ -48,43 +48,39 @@ export async function get12LabsVideoIds(videoId: string) {
   return data?.twelveLabsVideos[0];
 }
 
-export async function createVideo({ videoUrl }: { videoUrl: string }) {
+export async function validateSite({ videoUrl }: { videoUrl: string }) {
   try {
-    const res = videoUrl
-      ? await fetch(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/validate-resource`,
-          {
-            method: "POST",
-            body: JSON.stringify({ url: videoUrl }),
-            headers: {
-              accept: "application/json",
-              "Content-Type": "application/json",
-            },
-            cache: "no-cache",
-          },
-        )
-      : null;
-
-    const text = await res?.text();
-
-    if (!videoUrl || (videoUrl && res?.ok)) {
-      const { userId } = auth();
-
-      const video = await db.videoMetadata.create({
-        data: {
-          userId,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/validate-resource`,
+      {
+        method: "POST",
+        body: JSON.stringify({ url: videoUrl }),
+        headers: {
+          accept: "application/json",
+          "Content-Type": "application/json",
         },
-      });
+        cache: "no-cache",
+      },
+    );
 
-      return video.id;
-    } else {
-      throw new Error(text);
-    }
+    if (!res?.ok) throw new Error(await res?.text());
   } catch (error) {
     console.log(error);
 
     throw error;
   }
+}
+
+export async function createVideo() {
+  const { userId } = auth();
+
+  const video = await db.videoMetadata.create({
+    data: {
+      userId,
+    },
+  });
+
+  return video.id;
 }
 
 export async function saveVideoTitleAndSize({
