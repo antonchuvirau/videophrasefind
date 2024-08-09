@@ -19,7 +19,11 @@ import {
   triggerTranscription,
 } from "@/app/actions";
 
-import { createVideo, saveVideoTitleAndSize } from "@/app/video-actions";
+import {
+  createVideo,
+  saveVideoTitleAndSize,
+  validateSite,
+} from "@/app/video-actions";
 
 export const schema = z.object({
   ytUrl: z.union([
@@ -95,24 +99,33 @@ export default function VideoForm() {
     onMutate: () => {
       setStatus("Creating a video...");
     },
-    mutationFn: () => createVideo({ videoUrl: ytUrl }),
+    mutationFn: createVideo,
     onSuccess: async (videoId) => {
-      if (videoId) {
-        const { message } = ytUrl
-          ? await externalUploadMutation.mutateAsync({
-              ytUrl,
-              videoId,
-            })
-          : await localUploadMutation.mutateAsync({
-              file: acceptedFiles[0],
-              videoId,
-            });
-        console.log({ message });
+      const { message } = ytUrl
+        ? await externalUploadMutation.mutateAsync({
+            ytUrl,
+            videoId,
+          })
+        : await localUploadMutation.mutateAsync({
+            file: acceptedFiles[0],
+            videoId,
+          });
+      console.log({ message });
 
-        startTransition(() => {
-          router.push(`/video/${videoId}`);
-        });
-      }
+      startTransition(() => {
+        router.push(`/video/${videoId}`);
+      });
+    },
+  });
+
+  const validateSiteMutation = useMutation({
+    onMutate: () => {
+      setStatus("Validating site...");
+    },
+    mutationFn: ({ videoUrl }: { videoUrl: string }) =>
+      validateSite({ videoUrl }),
+    onSuccess: () => {
+      createVideoMutation.mutate();
     },
   });
 
@@ -121,13 +134,14 @@ export default function VideoForm() {
     isPending ||
     localUploadMutation.isPending ||
     externalUploadMutation.isPending ||
-    createVideoMutation.isPending
+    createVideoMutation.isPending ||
+    validateSiteMutation.isPending
   )
     return (
       <div className="flex w-full max-w-[512px] flex-col items-center gap-4">
         <Icons.spinner className="size-20 animate-spin text-[#9DA3AE]" />
         <div className="text-center">
-          <h2 className="mb-4 text-lg font-bold">Video processing...</h2>
+          <h2 className="mb-4 text-lg font-bold">Processing...</h2>
           <p className="text-md animate-slide whitespace-pre-wrap text-center text-[#9DA3AE]">
             {status}
           </p>
@@ -138,7 +152,9 @@ export default function VideoForm() {
   return (
     <form
       onSubmit={handleSubmit(() => {
-        createVideoMutation.mutate();
+        ytUrl
+          ? validateSiteMutation.mutate({ videoUrl: ytUrl })
+          : createVideoMutation.mutate();
       })}
       className="flex w-full flex-col items-center gap-8 rounded-[32px] bg-[#0B111A] p-4 min-[1050px]:max-w-[512px]"
     >
@@ -192,6 +208,7 @@ export default function VideoForm() {
           localUploadMutation.isPending ||
           externalUploadMutation.isPending ||
           createVideoMutation.isPending ||
+          validateSiteMutation.isPending ||
           !isValid ||
           (!isDirty && acceptedFiles.length === 0)
         }
