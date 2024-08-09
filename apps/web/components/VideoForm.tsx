@@ -24,6 +24,7 @@ import {
   saveVideoTitleAndSize,
   validateSite,
 } from "@/app/video-actions";
+import toast from "react-hot-toast";
 
 export const schema = z.object({
   ytUrl: z.union([
@@ -122,10 +123,12 @@ export default function VideoForm() {
     onMutate: () => {
       setStatus("Validating site...");
     },
-    mutationFn: ({ videoUrl }: { videoUrl: string }) =>
-      validateSite({ videoUrl }),
-    onSuccess: () => {
-      createVideoMutation.mutate();
+    mutationFn: async ({ videoUrl }: { videoUrl: string }) => {
+      const result = await validateSite({ videoUrl });
+
+      if (!result.success) {
+        toast.error(result.message);
+      }
     },
   });
 
@@ -151,10 +154,12 @@ export default function VideoForm() {
 
   return (
     <form
-      onSubmit={handleSubmit(() => {
-        ytUrl
-          ? validateSiteMutation.mutate({ videoUrl: ytUrl })
-          : createVideoMutation.mutate();
+      onSubmit={handleSubmit(async () => {
+        if (ytUrl) {
+          await validateSiteMutation.mutateAsync({ videoUrl: ytUrl });
+        } else {
+          createVideoMutation.mutate();
+        }
       })}
       className="flex w-full flex-col items-center gap-8 rounded-[32px] bg-[#0B111A] p-4 min-[1050px]:max-w-[512px]"
     >

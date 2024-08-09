@@ -27,9 +27,13 @@ app.post("/validate-resource", async (c) => {
   } catch (error) {
     console.error(error);
 
-    throw new HTTPException(406, {
-      message: "Resource is not valid, check the supported resources list",
-    });
+    return c.json(
+      {
+        success: false,
+        message: "Resource is not valid, check the supported resources list",
+      },
+      406
+    );
   }
 });
 

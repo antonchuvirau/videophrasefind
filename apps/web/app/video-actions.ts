@@ -4,6 +4,7 @@ import { db } from "database";
 import { auth } from "@clerk/nextjs/server";
 
 import { getS3DirectoryUrl } from "@/lib/s3";
+import { z } from "zod";
 
 export async function getVideoUrl(videoId: string) {
   const url = `${getS3DirectoryUrl(videoId)}/video.webm`;
@@ -49,26 +50,25 @@ export async function get12LabsVideoIds(videoId: string) {
 }
 
 export async function validateSite({ videoUrl }: { videoUrl: string }) {
-  try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/validate-resource`,
-      {
-        method: "POST",
-        body: JSON.stringify({ url: videoUrl }),
-        headers: {
-          accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        cache: "no-cache",
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/downloader/validate-resource`,
+    {
+      method: "POST",
+      body: JSON.stringify({ url: videoUrl }),
+      headers: {
+        accept: "application/json",
+        "Content-Type": "application/json",
       },
-    );
+      cache: "no-cache",
+    },
+  );
 
-    if (!res?.ok) throw new Error(await res?.text());
-  } catch (error) {
-    console.log(error);
-
-    throw error;
-  }
+  return z
+    .object({
+      success: z.boolean(),
+      message: z.string(),
+    })
+    .parse(await res.json());
 }
 
 export async function createVideo() {
