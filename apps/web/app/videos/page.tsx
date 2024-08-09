@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@clerk/nextjs/server";
 import { Prisma, db } from "database";
-import { intervalToDuration } from "date-fns";
+import { differenceInHours, intervalToDuration } from "date-fns";
 
 import { padTime } from "@/components/CaptionsEntry";
 
@@ -104,34 +104,33 @@ export default async function VideosPage() {
                     )}
                   </span>
                 </span>
-                {video.twelveLabsVideos[0] && (
+                {video.twelveLabsVideos[0] ? (
                   <>
                     <span className="flex items-center gap-2 text-white/70">
                       <Icons.audioLines strokeWidth={1.5} className="size-5" />
                       <span className="font-semibold">{`${formatDuration(video.twelveLabsVideos[0].duration)} ${!video.twelveLabsVideos[0].full ? "(Cropped)" : "(Full)"}`}</span>
                     </span>
                     {video.twelveLabsVideos[0].transaction &&
-                      -1 * video.twelveLabsVideos[0].transaction.credits >
-                        0 && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger className="group">
-                              <span className="flex items-center gap-2 text-white/70 underline-offset-4 group-hover:underline">
-                                <Icons.handCredits
-                                  strokeWidth={1.5}
-                                  className="size-5"
-                                />
-                                <span className="font-semibold">{`${video.twelveLabsVideos[0].transaction.credits} credits`}</span>
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>{`The video cost you ${-1 * video.twelveLabsVideos[0].transaction.credits} credits`}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
+                    -1 * video.twelveLabsVideos[0].transaction.credits > 0 ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger className="group">
+                            <span className="flex items-center gap-2 text-white/70 underline-offset-4 group-hover:underline">
+                              <Icons.handCredits
+                                strokeWidth={1.5}
+                                className="size-5"
+                              />
+                              <span className="font-semibold">{`${video.twelveLabsVideos[0].transaction.credits} credits`}</span>
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{`The video cost you ${-1 * video.twelveLabsVideos[0].transaction.credits} credits`}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : null}
                   </>
-                )}
+                ) : null}
                 <span className="flex items-center gap-2 text-white/70">
                   <Icons.date strokeWidth={1.5} className="size-5" />
                   <time className="font-semibold">{`${formatDate(video.createdAt)} at ${formatTime(video.createdAt)}`}</time>
@@ -145,14 +144,18 @@ export default async function VideosPage() {
                     <Icons.ready className="size-5" />
                   </span>
                 ) : null}
-                {!video.twelveLabsVideos[0]?.status ||
-                video.twelveLabsVideos[0]?.status === "PROCESSING" ? (
+                {(!video.twelveLabsVideos[0]?.status ||
+                  video.twelveLabsVideos[0]?.status === "PROCESSING") &&
+                differenceInHours(new Date(), video.createdAt) < 5 ? (
                   <span className="flex items-center gap-2 text-amber-300">
                     please wait, we&apos;re processing your video
                     <Icons.spinner className="size-5 animate-spin" />
                   </span>
                 ) : null}
-                {video.twelveLabsVideos[0]?.status === "FAILED" ? (
+                {video.twelveLabsVideos[0]?.status === "FAILED" ||
+                ((!video.twelveLabsVideos[0] ||
+                  video.twelveLabsVideos[0]?.status === "PROCESSING") &&
+                  differenceInHours(new Date(), video.createdAt) >= 5) ? (
                   <span className="flex items-center gap-2 text-red-500">
                     error processing the video
                     <Icons.errorProcessingVideo className="size-5" />
