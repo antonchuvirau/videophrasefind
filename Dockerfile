@@ -5,6 +5,7 @@ WORKDIR /app
 RUN corepack enable pnpm
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc .
+COPY --parents patches .
 COPY --parents apps/worker/package.json .
 COPY --parents packages/database/package.json .
 RUN pnpm install
