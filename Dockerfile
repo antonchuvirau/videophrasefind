@@ -2,6 +2,8 @@
 FROM node:20-alpine AS base
 RUN apk add ffmpeg py3-pip python3
 RUN pip3 install yt-dlp https://github.com/coletdjnz/yt-dlp-youtube-oauth2/archive/refs/heads/master.zip --break-system-packages
+RUN mkdir -p ~/.config/yt-dlp && echo "--netrc" >> ~/.config/yt-dlp/config
+RUN echo 'machine youtube login oauth2 password ""' >> ~/.netrc
 WORKDIR /app
 RUN corepack enable pnpm
 
