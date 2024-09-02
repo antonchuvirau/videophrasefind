@@ -26,6 +26,14 @@ export const transcriptionsSchema = z
     end: z.number(),
   })
   .array()
+  // This transform assumes 12labs sends transcriptions word-by-word
+  .transform((transactiptions) => {
+    return _.chunk(transactiptions, 5).map((chunk) => ({
+      start: _.first(chunk)!.start,
+      end: _.last(chunk)!.end,
+      value: chunk.map((transcription) => transcription.value).join(" "),
+    }));
+  })
   .transform((transcriptions) => {
     const vttLines = transcriptions.map(
       (transcription) =>
