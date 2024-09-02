@@ -73,4 +73,18 @@
   body {
     @apply bg-background text-foreground;
   }
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+  ::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: inset 0 0 6px var(--scroll-bar-handle-bg-color);
+    -webkit-box-shadow: inset 0 0 6px var(--scroll-bar-handle-bg-color);
+  }
+
+  ::-webkit-scrollbar-thumb:window-inactive {
+    background: rgba(255, 255, 255, 0.7);
+  }
 }
+
