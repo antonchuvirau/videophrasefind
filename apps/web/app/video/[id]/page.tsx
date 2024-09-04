@@ -74,6 +74,16 @@ export default async function VideoPage({ params: { id } }: Props) {
       })
     : null;
 
+  const isFullVersion =
+    (await db.twelveLabsVideo.count({
+      where: {
+        videoMetadata: {
+          id,
+        },
+        full: true,
+      },
+    })) > 0;
+
   const [videoUrl, { data }] = await Promise.all([
     getVideoUrl(id),
     getTranscriptions(id),
@@ -85,6 +95,7 @@ export default async function VideoPage({ params: { id } }: Props) {
       videoId={id}
       data={data}
       userMembershipType={membershipType?.type}
+      isFullVersion={isFullVersion}
     />
   );
 }

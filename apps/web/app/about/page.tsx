@@ -33,7 +33,7 @@ export default function About() {
       </div>
       <div className="flex flex-col gap-7">
         <h2 className="text-xl">Video search</h2>
-        <div className="rounded-xl border border-[#212A36] bg-[#0D131C] p-6">
+        <div className="rounded-xl border bg-[#0D131C] p-6">
           <div className="text-white/70 md:text-lg">
             <p>
               Search a video for keyword for phrase by pasting a link or

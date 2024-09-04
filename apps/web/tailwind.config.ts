@@ -22,11 +22,11 @@ const config = {
         exo: ["var(--font-exo)"],
       },
       colors: {
-        border: "hsl(var(--border))",
+        border: "#212A36",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        background: "#161E2A",
+        foreground: "#FFFFFF",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -52,7 +52,7 @@ const config = {
           foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "hsl(var(--card))",
+          DEFAULT: "#212A36",
           foreground: "hsl(var(--card-foreground))",
         },
       },

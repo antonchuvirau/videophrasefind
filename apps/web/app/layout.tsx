@@ -39,7 +39,7 @@ export default function RootLayout({
     <html lang="en">
       <ClerkProvider>
         <body
-          className={`${inter.className} ${exo.variable} flex min-h-screen flex-col bg-[#161E2A]`}
+          className={`${inter.className} ${exo.variable} flex min-h-screen flex-col`}
         >
           <Analytics />
           <QueryProvider>
