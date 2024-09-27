@@ -13,9 +13,9 @@ export default async function SupportedSitesPage() {
         source={markdown}
         components={{
           h1: () => (
-            <h1 className="text-center text-2xl font-bold">
+            <h2 className="text-center">
               Which sites can you upload videos from?
-            </h1>
+            </h2>
           ),
           li: (props) => <li className="text-lg"> - {props.children}</li>,
         }}
