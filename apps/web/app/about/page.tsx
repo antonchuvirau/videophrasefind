@@ -15,7 +15,7 @@ export default function About() {
     <div className="flex max-w-[800px] flex-col gap-11 rounded-[32px] bg-[#0B111A] p-8 md:p-[46px]">
       <div className="flex flex-col gap-8 text-center">
         <h2>About the project</h2>
-        <p className="text-white/70 sm:text-lg">
+        <p className="text-white/70">
           With video becoming the dominant form of media being consumed, we are
           building a robust engine to search and sift easily to deliver accurate
           results. The engine utilizes the audio in the video for transcriptions
@@ -27,9 +27,9 @@ export default function About() {
           <span className="rounded-full bg-purple-600 p-3">
             <Icons.key className="size-5" />
           </span>
-          <h3 className="text-xl">Video search:</h3>
+          <h3>Video search:</h3>
         </span>
-        <p className="mt-6 text-white/70 md:text-lg">
+        <p className="mt-6 text-white/70">
           Search a video for <span className="text-purple-700">keyword</span>{" "}
           for phrase by pasting a link or uploading a movie file.
         </p>
@@ -39,9 +39,9 @@ export default function About() {
           <span className="rounded-full bg-purple-600 p-3">
             <Icons.messageSquareQuote className="size-5" />
           </span>
-          <h3 className="text-xl">Semantic search:</h3>
+          <h3>Semantic search:</h3>
         </span>
-        <div className="mt-6 text-white/70 md:text-lg">
+        <div className="mt-6 text-white/70">
           <p>
             The platform determines the meaning of a{" "}
             <span className="text-purple-700">search query</span>, rather than

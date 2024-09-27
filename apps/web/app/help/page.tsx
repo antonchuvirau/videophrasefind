@@ -64,9 +64,7 @@ export const metadata: Metadata = {
 export default function Help() {
   return (
     <div className="flex w-full max-w-[800px] flex-col gap-7">
-      <h2 className="text-center text-xl font-medium sm:text-2xl">
-        How to use the app?
-      </h2>
+      <h2 className="text-center">How to use the app?</h2>
       <ul className="flex flex-col items-center gap-5 sm:text-lg">
         {steps.map((step, index) => (
           <li

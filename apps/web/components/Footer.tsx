@@ -11,7 +11,7 @@ const Footer = () => {
   return (
     <footer className="flex w-full justify-center bg-[#161E2A] px-7 pb-7">
       <div className="inline-flex gap-10 text-sm">
-        <h2>Company</h2>
+        <span className="font-medium">Company</span>
         <ul>
           <Link href="/terms-of-service">
             <li>Terms of Service</li>
