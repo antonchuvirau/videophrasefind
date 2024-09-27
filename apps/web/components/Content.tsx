@@ -31,6 +31,9 @@ import { useThumbnailer, STEP } from "@/hooks/useThumbnailer";
 import Loader from "@/app/video/[id]/loader";
 
 import { getSemanticSearchResult } from "@/app/actions";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Info } from "lucide-react";
+import { buttonVariants } from "./ui/button";
 
 export const schema = z.object({
   searchQuery: z.string(),
@@ -45,6 +48,7 @@ interface Props {
   videoUrl: string | null;
   refreshInterval?: number;
   userMembershipType: MaybeMembershipType<"pro" | "promax">;
+  isFullVersion: boolean;
 }
 
 function getLoaderMessage(videoDurationSeconds?: number) {
@@ -58,12 +62,33 @@ function getLoaderMessage(videoDurationSeconds?: number) {
   return "Waiting for transcription results. Your video is pretty large, it make take some time (up to half of the video duration). You can save this link and come back later!";
 }
 
+function CroppedVideoAlert() {
+  return (
+    <div className="pb-6">
+      <Alert className="rounded-[18px]">
+        <Info />
+        <AlertTitle>Partial transcript</AlertTitle>
+        <AlertDescription>
+          Your video has been partially transcribed. Upgrade your account for a
+          complete transcript.
+          <div className="mt-2 flex justify-center">
+            <Link className={buttonVariants()} href="/pricing">
+              Become a PRO user
+            </Link>
+          </div>
+        </AlertDescription>
+      </Alert>
+    </div>
+  );
+}
+
 const Content = ({
   data,
   videoId,
   videoUrl,
   refreshInterval,
   userMembershipType,
+  isFullVersion,
 }: Props) => {
   useRefresher({ enabled: !(data && videoUrl), interval: refreshInterval });
 
@@ -111,7 +136,7 @@ const Content = ({
     );
 
   return (
-    <div className="grid flex-1 grid-cols-3 gap-10 overflow-hidden rounded-[32px] bg-[#212A36] p-10">
+    <div className="grid flex-1 grid-cols-3 gap-10 overflow-hidden rounded-[32px] bg-card p-10">
       <div className="col-span-2">
         <div className="rounded-2xl bg-[#ffffff1f] p-2">
           <video
@@ -217,6 +242,7 @@ const Content = ({
                       semanticSearchConfidence={i.confidence}
                     />
                   ))}
+                  {isFullVersion ? null : <CroppedVideoAlert />}
                 </div>
               </>
             ) : (
@@ -236,6 +262,7 @@ const Content = ({
                       }
                     />
                   ))}
+                  {isFullVersion ? null : <CroppedVideoAlert />}
                 </div>
               </>
             )}

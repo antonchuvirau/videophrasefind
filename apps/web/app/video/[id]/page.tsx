@@ -11,7 +11,7 @@ import {
   get12LabsVideoProcessingStatus,
 } from "@/app/video-actions";
 
-import { client12Labs } from "@/twelveLabs/client";
+// import { client12Labs } from "@/twelveLabs/client";
 import { transcriptionsSchema } from "@/twelveLabs/utils";
 
 interface Props {
@@ -37,12 +37,27 @@ async function getTranscriptions(videoId: string) {
 
   if (!ids?.twelveLabsVideoId) return { ready: false, data: null };
 
-  const transcriptions = await client12Labs().index.video.transcription(
-    ids.twelveLabsIndexId,
-    ids.twelveLabsVideoId,
-  );
+  // const transcriptions = await client12Labs().index.video.transcription(
+  //   ids.twelveLabsIndexId,
+  //   ids.twelveLabsVideoId,
+  // );
 
-  return { ready: true, data: transcriptionsSchema.parse(transcriptions) };
+  const url = `https://api.twelvelabs.io/v1.2/indexes/${ids.twelveLabsIndexId}/videos/${ids.twelveLabsVideoId}/transcription`;
+  const options: Parameters<typeof fetch>[1] = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      "x-api-key": process.env.TWELVE_LABS_API_KEY!,
+      "Content-Type": "application/json",
+      cache: "no-cache",
+    },
+  };
+
+  const res = await fetch(url, options);
+
+  const { data: transciptions } = await res.json();
+
+  return { ready: true, data: transcriptionsSchema.parse(transciptions) };
 }
 
 export default async function VideoPage({ params: { id } }: Props) {
@@ -59,6 +74,16 @@ export default async function VideoPage({ params: { id } }: Props) {
       })
     : null;
 
+  const isFullVersion =
+    (await db.twelveLabsVideo.count({
+      where: {
+        videoMetadata: {
+          id,
+        },
+        full: true,
+      },
+    })) > 0;
+
   const [videoUrl, { data }] = await Promise.all([
     getVideoUrl(id),
     getTranscriptions(id),
@@ -70,6 +95,7 @@ export default async function VideoPage({ params: { id } }: Props) {
       videoId={id}
       data={data}
       userMembershipType={membershipType?.type}
+      isFullVersion={isFullVersion}
     />
   );
 }

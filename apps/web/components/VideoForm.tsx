@@ -124,10 +124,11 @@ export default function VideoForm() {
       setStatus("Validating site...");
     },
     mutationFn: async ({ videoUrl }: { videoUrl: string }) => {
-      const result = await validateSite({ videoUrl });
-
-      if (!result.success) {
-        toast.error(result.message);
+      return validateSite({ videoUrl });
+    },
+    onSuccess: (data) => {
+      if (!data.success) {
+        toast.error(data.message);
       }
     },
   });
@@ -155,11 +156,12 @@ export default function VideoForm() {
   return (
     <form
       onSubmit={handleSubmit(async () => {
-        if (ytUrl) {
-          await validateSiteMutation.mutateAsync({ videoUrl: ytUrl });
-        } else {
-          createVideoMutation.mutate();
-        }
+        const isValid = ytUrl
+          ? await validateSiteMutation
+              .mutateAsync({ videoUrl: ytUrl })
+              .then((r) => r.success)
+          : true;
+        if (isValid) return createVideoMutation.mutate();
       })}
       className="flex w-full flex-col items-center gap-8 rounded-[32px] bg-[#0B111A] p-4 min-[1050px]:max-w-[512px]"
     >
