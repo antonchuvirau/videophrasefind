@@ -10,6 +10,8 @@ import {
   HandCoins,
   Check,
   ServerCrash,
+  MessageSquareQuote,
+  Key,
 } from "lucide-react";
 
 export const Icons = {
@@ -24,4 +26,6 @@ export const Icons = {
   handCredits: HandCoins,
   check: Check,
   errorProcessingVideo: ServerCrash,
+  messageSquareQuote:MessageSquareQuote,
+  key: Key,
 };

@@ -36,6 +36,12 @@
   body {
     @apply bg-background text-foreground;
   }
+  h2 {
+    @apply text-3xl font-medium;
+  }
+  h3 {
+    @apply font-medium;
+  }
   ::-webkit-scrollbar {
     width: 5px;
   }
@@ -50,4 +56,3 @@
     background: rgba(255, 255, 255, 0.7);
   }
 }
-
