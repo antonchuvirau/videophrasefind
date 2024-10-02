@@ -92,7 +92,11 @@ export async function getSemanticSearchResult(videoId: string, query: string) {
     conversationOption: "semantic",
   });
 
-  const result = (search.data as SearchData[]).map((clip) => ({
+  const searchData = search.data as SearchData[] | undefined;
+
+  if (!searchData) return [];
+
+  const result = searchData.map((clip) => ({
     entry: {
       id: "",
       from: clip.start * 1000,
